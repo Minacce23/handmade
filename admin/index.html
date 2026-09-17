@@ -59,7 +59,7 @@
 
   .strip { display:flex; flex-wrap:wrap; gap:10px; margin-top:12px; align-items:flex-start; }
   .tile { width:120px; position:relative; }
-  .tile img { width:120px; height:150px; object-fit:cover; display:block; background:var(--line); cursor:grab; }
+  .tile img { width:120px; height:150px; object-fit:contain; display:block; background:#fff; border:1px solid var(--line); cursor:grab; }
   .tile .badge { position:absolute; top:6px; left:6px; background:rgba(255,255,255,.92); font-size:10px; letter-spacing:.1em; text-transform:uppercase; padding:1px 6px; }
   .tile .new { position:absolute; top:6px; right:6px; background:var(--ink); color:#fff; font-size:10px; padding:1px 6px; }
   .tools { display:flex; flex-wrap:wrap; gap:3px; margin-top:4px; }
@@ -69,6 +69,19 @@
   .add:hover { border-color:var(--ink); color:var(--ink); }
   .add input { display:none; }
 
+  .modal { position:fixed; inset:0; background:rgba(29,28,26,.6); z-index:20; display:flex; align-items:center; justify-content:center; padding:16px; }
+  .ed-box { background:var(--bg); padding:16px; width:100%; max-width:900px; max-height:100%; overflow:auto; }
+  .ed-box h2 { margin-bottom:10px; }
+  .ed-wrap { text-align:center; background:#e9e6e1; padding:10px; }
+  .ed-stage { position:relative; display:inline-block; vertical-align:top; overflow:hidden; touch-action:none; }
+  .ed-stage canvas { display:block; }
+  .crop { position:absolute; border:1px solid #fff; box-shadow:0 0 0 1px rgba(0,0,0,.4); cursor:move; touch-action:none; }
+  .crop .h { position:absolute; width:18px; height:18px; background:#fff; border:1px solid var(--ink); }
+  .h.nw { left:0; top:0; cursor:nwse-resize; } .h.ne { right:0; top:0; cursor:nesw-resize; }
+  .h.sw { left:0; bottom:0; cursor:nesw-resize; } .h.se { right:0; bottom:0; cursor:nwse-resize; }
+  .ed-tools { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:12px; }
+  .ed-tools .grow { flex:1; }
+  .ed-note { color:var(--muted); font-size:12px; margin:10px 0 0; }
   .loose { max-width:1100px; margin:8px auto 60px; padding:16px 24px; }
   .loose p { color:var(--muted); margin:0; font-size:13px; }
   @media (max-width:600px) { .bar { padding:10px 16px; } main, .loose, .help { padding-left:16px; padding-right:16px; } .tile, .tile img, .add { width:100px; } .tile img, .add { height:125px; } }
@@ -114,6 +127,35 @@
     <p>Photos that are not in any project (they stay saved). Drag one onto a project, or use its Move menu.</p>
     <div id="loose" class="strip"></div>
   </section>
+</div>
+
+<div id="editor" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="edTitle">
+  <div class="ed-box">
+    <h2 id="edTitle">Rotate or crop</h2>
+    <div class="ed-wrap" id="edWrap">
+      <div class="ed-stage"><canvas id="edCanvas"></canvas>
+        <div id="edCrop" class="crop"><span class="h nw" data-h="nw"></span><span class="h ne" data-h="ne"></span><span class="h sw" data-h="sw"></span><span class="h se" data-h="se"></span></div>
+      </div>
+    </div>
+    <div class="ed-tools">
+      <button id="edRotL">&#8634; Rotate left</button>
+      <button id="edRotR">Rotate right &#8635;</button>
+      <label>Crop shape
+        <select id="edRatio">
+          <option value="0">Free</option>
+          <option value="1">Square</option>
+          <option value="0.8">Portrait (4:5)</option>
+          <option value="1.25">Landscape (5:4)</option>
+          <option value="orig">Original shape</option>
+        </select>
+      </label>
+      <button id="edReset">Reset</button>
+      <span class="grow"></span>
+      <button id="edCancel">Cancel</button>
+      <button id="edApply" class="primary">Apply</button>
+    </div>
+    <p class="ed-note">Drag inside the box to move it and drag the corners to resize. Your original photo is kept in Loose photos in case you want it back.</p>
+  </div>
 </div>
 
 <script>
@@ -293,6 +335,7 @@ function tile(name, pi, k) {
     <div class="tools">
       ${pi >= 0 && k > 0 ? '<button data-t="cover" title="Make this the cover">&#9733;</button><button data-t="left" title="Move left">&lsaquo;</button>' : ""}
       ${pi >= 0 && k < p.photos.length - 1 ? '<button data-t="right" title="Move right">&rsaquo;</button>' : ""}
+      ${pi >= 0 ? '<button data-t="edit" title="Rotate or crop">Edit</button>' : ""}
       ${moveMenu(pi)}
     </div>
     ${pi >= 0 && p.categories.length > 1 ? `<div class="chips" title="Which crafts this photo shows">${p.categories.map(c => `<button class="chip${photoCats(p, name).includes(c) ? " on" : ""}" data-c="${c}">${SHORT[c]}</button>`).join("")}</div>` : ""}`;
@@ -310,6 +353,7 @@ function tile(name, pi, k) {
     changed();
   });
   t.querySelectorAll(".tools button").forEach(b => b.onclick = () => {
+    if (b.dataset.t === "edit") return openEditor(name, p);
     const a = p.photos;
     if (b.dataset.t === "cover") { a.splice(k, 1); a.unshift(name); }
     if (b.dataset.t === "left") { [a[k - 1], a[k]] = [a[k], a[k - 1]]; }
@@ -409,6 +453,138 @@ $("#sortDate").onclick = () => {
   projects.sort((a, b) => (b.date || "0").localeCompare(a.date || "0"));
   changed();
   status("Sorted newest first. Projects without a date are at the end.");
+};
+
+// ---------- photo editor (rotate + crop) ----------
+const ed = { name: null, p: null, img: null, rot: 0, rc: null, crop: null, ratio: 0, scale: 1 };
+const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const i = new Image();
+    if (!src.startsWith("data:")) i.crossOrigin = "anonymous";
+    i.onload = () => resolve(i); i.onerror = reject; i.src = src;
+  });
+}
+
+async function openEditor(name, p) {
+  status("Opening photo...");
+  try { ed.img = await loadImage(imgSrc(name)); }
+  catch (e) { status("Couldn't open that photo for editing. If you just saved it, try again in a minute.", true); return; }
+  status(dirty ? "You have unsaved changes." : "");
+  Object.assign(ed, { name, p, rot: 0, ratio: 0 });
+  $("#edRatio").value = "0";
+  $("#editor").hidden = false;
+  rotate(0);
+}
+function closeEditor() { $("#editor").hidden = true; ed.img = ed.rc = null; }
+
+function rotate(delta) {
+  ed.rot = (ed.rot + delta + 360) % 360;
+  const w = ed.img.naturalWidth, h = ed.img.naturalHeight, side = ed.rot % 180 !== 0;
+  const c = document.createElement("canvas");
+  c.width = side ? h : w; c.height = side ? w : h;
+  const x = c.getContext("2d");
+  x.translate(c.width / 2, c.height / 2);
+  x.rotate(ed.rot * Math.PI / 180);
+  x.drawImage(ed.img, -w / 2, -h / 2);
+  ed.rc = c;
+  if ($("#edRatio").value === "orig") ed.ratio = c.width / c.height;
+  resetCrop();
+  draw();
+}
+function resetCrop() {
+  const W = ed.rc.width, H = ed.rc.height, r = ed.ratio;
+  let w = W, h = H;
+  if (r) { h = w / r; if (h > H) { h = H; w = h * r; } }
+  ed.crop = { x: (W - w) / 2, y: (H - h) / 2, w, h };
+}
+function draw() {
+  if (!ed.rc) return;
+  const cv = $("#edCanvas");
+  const maxW = $("#edWrap").clientWidth - 20, maxH = Math.min(window.innerHeight * 0.6, 640);
+  ed.scale = Math.min(maxW / ed.rc.width, maxH / ed.rc.height, 1);
+  cv.width = Math.round(ed.rc.width * ed.scale);
+  cv.height = Math.round(ed.rc.height * ed.scale);
+  placeCrop();
+}
+function placeCrop() {
+  const s = ed.scale, c = ed.crop, cv = $("#edCanvas"), x = cv.getContext("2d");
+  x.drawImage(ed.rc, 0, 0, cv.width, cv.height);
+  x.fillStyle = "rgba(0,0,0,.55)";
+  x.beginPath();
+  x.rect(0, 0, cv.width, cv.height);
+  x.rect(c.x * s, c.y * s, c.w * s, c.h * s);
+  x.fill("evenodd");
+  Object.assign($("#edCrop").style, { left: c.x * s + "px", top: c.y * s + "px", width: c.w * s + "px", height: c.h * s + "px" });
+}
+
+let act = null;
+const cropBox = $("#edCrop");
+cropBox.addEventListener("pointerdown", e => {
+  e.preventDefault();
+  act = { mode: e.target.dataset.h || "move", sx: e.clientX, sy: e.clientY, start: { ...ed.crop } };
+  cropBox.setPointerCapture(e.pointerId);
+});
+cropBox.addEventListener("pointermove", e => {
+  if (!act) return;
+  const dx = (e.clientX - act.sx) / ed.scale, dy = (e.clientY - act.sy) / ed.scale;
+  const W = ed.rc.width, H = ed.rc.height, s = act.start, MIN = 40, m = act.mode;
+  if (m === "move") {
+    ed.crop = { ...s, x: clamp(s.x + dx, 0, W - s.w), y: clamp(s.y + dy, 0, H - s.h) };
+  } else {
+    let L = s.x, T = s.y, R = s.x + s.w, B = s.y + s.h;
+    if (m.includes("w")) L = clamp(L + dx, 0, R - MIN); else R = clamp(R + dx, L + MIN, W);
+    if (m.includes("n")) T = clamp(T + dy, 0, B - MIN); else B = clamp(B + dy, T + MIN, H);
+    let w = R - L, h = B - T;
+    if (ed.ratio) {
+      h = w / ed.ratio;
+      const maxH = m.includes("n") ? B : H - T;
+      if (h > maxH) { h = maxH; w = h * ed.ratio; }
+      if (m.includes("w")) L = R - w;
+      if (m.includes("n")) T = B - h;
+    }
+    ed.crop = { x: L, y: T, w, h };
+  }
+  placeCrop();
+});
+["pointerup", "pointercancel"].forEach(t => cropBox.addEventListener(t, () => { act = null; }));
+
+$("#edRotL").onclick = () => rotate(-90);
+$("#edRotR").onclick = () => rotate(90);
+$("#edReset").onclick = () => { ed.rot = 0; $("#edRatio").value = "0"; ed.ratio = 0; rotate(0); };
+$("#edRatio").onchange = e => {
+  const v = e.target.value;
+  ed.ratio = v === "orig" ? ed.rc.width / ed.rc.height : +v;
+  resetCrop(); placeCrop();
+};
+$("#edCancel").onclick = closeEditor;
+$("#editor").addEventListener("click", e => { if (e.target.id === "editor") closeEditor(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("#editor").hidden) closeEditor(); });
+window.addEventListener("resize", draw);
+
+$("#edApply").onclick = () => {
+  const c = ed.crop, sc = Math.min(1, 1600 / Math.max(c.w, c.h));
+  const out = document.createElement("canvas");
+  out.width = Math.round(c.w * sc); out.height = Math.round(c.h * sc);
+  const x = out.getContext("2d");
+  x.fillStyle = "#fff"; x.fillRect(0, 0, out.width, out.height);
+  x.drawImage(ed.rc, c.x, c.y, c.w, c.h, 0, 0, out.width, out.height);
+  let data;
+  try { data = out.toDataURL("image/jpeg", 0.86); }
+  catch (e) { status("Couldn't save this edit because the photo couldn't be read. Try again after saving.", true); return; }
+  const p = ed.p, old = ed.name;
+  const name = `${old.replace(/(-e[a-z0-9]+)?\.\w+$/i, "")}-e${Date.now().toString(36)}.jpg`;
+  uploads[name] = data.split(",")[1];
+  previews[name] = data;
+  const i = p.photos.indexOf(old);
+  if (i >= 0) p.photos[i] = name;
+  if (p.photoTags[old]) { p.photoTags[name] = p.photoTags[old]; delete p.photoTags[old]; }
+  const wasNew = !!uploads[old];
+  if (wasNew) { delete uploads[old]; delete previews[old]; }
+  closeEditor();
+  changed();
+  status(wasNew ? "Photo updated. Click Save changes to publish." : "Photo updated. The original is in Loose photos if you want it back. Click Save changes to publish.");
 };
 
 // ---------- save ----------
