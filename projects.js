@@ -5,6 +5,7 @@
 // date: "YYYY-MM", or "" to hide it. hidden: true keeps a project off the site.
 // Projects appear on the site in this order.
 const PROJECTS = [
+  {"title":"Hello Kitty Mini Backpack","categories":["sewing"],"date":"2025-03","photos":["sewing-mu4yfw557c5c.jpg","sewing-mu4yfw9r5lom.jpg","sewing-mu4yfwdbpvks.jpg"]},
   {"title":"Green Sweater Vest","categories":["knitting"],"date":"2024-05","photos":["sewing-mu4y9f0xo60u.jpg"]},
   {"title":"Octopus Sweater","categories":["knitting"],"date":"2024-12","photos":["sewing-mu4y6bjzk3g2-emu4y75vt.jpg","sewing-mu4y6bnsrtwl-emu4y79pg.jpg"]},
   {"title":"Star Quilt","categories":["sewing"],"date":"2026-09","photos":["sewing-mu4xomsj1zt4.jpg","sewing-mu4xomud04wu.jpg","sewing-mu4xomw6wgz1.jpg","sewing-mu4xomy09901.jpg","sewing-mu4xomzn32gz.jpg","sewing-mu4xon1dxmr1.jpg","sewing-mu4xon34iav8.jpg","sewing-mu4xon4syb1x.jpg","sewing-mu4xon6mqqht.jpg","sewing-mu4xon8l6yed.jpg","sewing-mu4xonaclsm0.jpg","sewing-mu4xonc14e9r.jpg","sewing-mu4xondn369k.jpg","sewing-mu4xonffvm6c.jpg","sewing-mu4xonhaqbqd.jpg","sewing-mu4xonj1t65v.jpg","sewing-mu4xonkrrx8q.jpg","sewing-mu4xonmhyj4l.jpg","sewing-mu4xono8704z.jpg","sewing-mu4xonpyc5v3.jpg","sewing-mu4xonrq8962.jpg","sewing-mu4xontfg1si.jpg","sewing-mu4xonv4c1xo.jpg","sewing-mu4xonwucz8l.jpg","sewing-mu4xonynp9tg.jpg","sewing-mu4xoo0b16q0.jpg","sewing-mu4xoo22bkdt.jpg","sewing-mu4xoo3tsky7.jpg","sewing-mu4xoo5is0m3.jpg","sewing-mu4xoo78zsvm.jpg","sewing-mu4xoo92m0a7.jpg","sewing-mu4xooaveeud.jpg"]},
@@ -21,8 +22,8 @@ const PROJECTS = [
   {"title":"Granny Square Cardigan","categories":["crochet"],"date":"2022-01","photos":["crochet-13.jpg","crochet-14.jpg"]},
   {"title":"Two-Tone Sweater","categories":["crochet"],"date":"2021-01","photos":["crochet-08.jpg"]},
   {"title":"Colorblock Cardigan","categories":["crochet"],"date":"2021-01","photos":["crochet-09-emu4y7tb0.jpg"]},
-  {"title":"Letter K Sweater","categories":["crochet"],"date":"2020-11","photos":["crochet-01.jpg"]},
+  {"title":"K Sweater","categories":["crochet"],"date":"2020-11","photos":["crochet-mu4ydpzp4dos.jpg","crochet-01.jpg"]},
   {"title":"Tropical Print Set","categories":["sewing"],"date":"2020-09","photos":["sewing-05.jpg","sewing-04.jpg","sewing-06.jpg"]},
-  {"title":"Blue Maxi Dress","categories":["sewing"],"date":"","photos":["sewing-01.jpg"]},
-  {"title":"Patchwork Cardigan","categories":["crochet"],"date":"","photos":["crochet-06.jpg"]},
+  {"title":"Blue Maxi Dress","categories":["sewing"],"date":"2026-03","photos":["sewing-01.jpg"]},
+  {"title":"Patchwork Cardigan","categories":["crochet"],"date":"2020-08","photos":["crochet-06.jpg"]},
 ];
