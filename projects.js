@@ -5,6 +5,7 @@
 // date: "YYYY-MM", or "" to hide it. hidden: true keeps a project off the site.
 // Projects appear on the site in this order.
 const PROJECTS = [
+  {"title":"Leaf Cardigan","categories":["knitting"],"date":"2023-09","photos":["knitting-mu50d0a476zh.jpg"]},
   {"title":"Starburst Sweater","categories":["knitting"],"date":"2024-05","photos":["sewing-mu4zngs9x4bs-emu4znuav.jpg","sewing-mu4zngoo89i6-emu4zo2fd.jpg"]},
   {"title":"Sungod Tank","categories":["crochet"],"date":"2022-04","photos":["sewing-mu4zlpzpir4v-emu4zm35b.jpg","sewing-mu4zlq05wui3.jpg"]},
   {"title":"Wendigo Corset","categories":["sewing"],"date":"2024-09","photos":["sewing-mu4zgxxeh7md-emu4zhkps.jpg","sewing-mu4zhdh0fjrz.jpg","sewing-mu4zhdizoplg.jpg"]},
