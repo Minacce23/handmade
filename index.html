@@ -61,15 +61,30 @@
 <script>
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 const fmt = d => d ? MONTHS[+d.slice(5,7)-1] + " " + d.slice(0,4) : "";
+const NAMES = { all:"All", sewing:"Sewing", crochet:"Crochet", knitting:"Knitting" };
+const label = cats => cats.map(c => NAMES[c]).join(" & ");
+
+// A project can have several categories. Each photo can be labeled with some of them;
+// an unlabeled photo counts for all of its project's categories.
+const cats = p => p.categories || (p.category ? [p.category] : []);
+function photoCats(p, n) {
+  const t = ((p.photoTags || {})[n] || []).filter(c => cats(p).includes(c));
+  return t.length ? t : cats(p);
+}
 // Order comes from projects.js (set it on the admin page). Hidden and empty projects are skipped.
 const SHOWN = PROJECTS.filter(p => !p.hidden && p.photos && p.photos.length);
-const NAMES = { all:"All", sewing:"Sewing", crochet:"Crochet", knitting:"Knitting" };
+function photosFor(p, filter) {
+  if (filter === "all") return p.photos;
+  const f = p.photos.filter(n => photoCats(p, n).includes(filter));
+  return f.length ? f : p.photos;
+}
+
 const grid = document.getElementById("grid"), nav = document.getElementById("filters");
 document.getElementById("yr").textContent = new Date().getFullYear();
 let current = "all", open = null, idx = 0;
 
 Object.keys(NAMES).forEach(k => {
-  const n = k === "all" ? SHOWN.length : SHOWN.filter(p => p.category === k).length;
+  const n = k === "all" ? SHOWN.length : SHOWN.filter(p => cats(p).includes(k)).length;
   const b = document.createElement("button");
   b.innerHTML = `${NAMES[k]}<span class="n">${n}</span>`;
   b.onclick = () => { current = k; history.replaceState(null, "", k === "all" ? "#" : "#" + k); render(); };
@@ -79,23 +94,26 @@ Object.keys(NAMES).forEach(k => {
 function render() {
   nav.querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.k === current));
   grid.innerHTML = "";
-  SHOWN.filter(p => current === "all" || p.category === current).forEach(p => {
+  SHOWN.filter(p => current === "all" || cats(p).includes(current)).forEach(p => {
+    const photos = photosFor(p, current);
     const c = document.createElement("article");
     c.className = "card";
-    c.innerHTML = `<div class="img"><img loading="lazy" src="images/${p.photos[0]}" alt="${p.title}">${p.photos.length > 1 ? `<span class="count">${p.photos.length} photos</span>` : ""}</div><h2>${p.title}</h2><p>${NAMES[p.category]}${p.date ? " &middot; " + fmt(p.date) : ""}</p>`;
-    c.onclick = () => show(p, 0);
+    c.innerHTML = `<div class="img"><img loading="lazy" src="images/${photos[0]}" alt="${p.title}">${photos.length > 1 ? `<span class="count">${photos.length} photos</span>` : ""}</div><h2>${p.title}</h2><p>${label(cats(p))}${p.date ? " &middot; " + fmt(p.date) : ""}</p>`;
+    c.onclick = () => show({ p, photos }, 0);
     grid.appendChild(c);
   });
 }
 
 const box = document.getElementById("box");
-function show(p, i) {
-  open = p; idx = (i + p.photos.length) % p.photos.length;
-  document.getElementById("boxImg").src = "images/" + p.photos[idx];
+function show(o, i) {
+  const { p, photos } = o;
+  open = o; idx = (i + photos.length) % photos.length;
+  const n = photos[idx];
+  document.getElementById("boxImg").src = "images/" + n;
   document.getElementById("boxImg").alt = p.title;
   document.getElementById("boxTitle").textContent = p.title;
-  document.getElementById("boxInfo").textContent = NAMES[p.category] + (p.date ? "  ·  " + fmt(p.date) : "") + (p.photos.length > 1 ? `  ·  ${idx + 1} of ${p.photos.length}` : "");
-  box.querySelectorAll(".prev,.next").forEach(b => b.style.display = p.photos.length > 1 ? "" : "none");
+  document.getElementById("boxInfo").textContent = label(photoCats(p, n)) + (p.date ? "  ·  " + fmt(p.date) : "") + (photos.length > 1 ? `  ·  ${idx + 1} of ${photos.length}` : "");
+  box.querySelectorAll(".prev,.next").forEach(b => b.style.display = photos.length > 1 ? "" : "none");
   box.classList.add("open");
 }
 const close = () => { box.classList.remove("open"); open = null; };

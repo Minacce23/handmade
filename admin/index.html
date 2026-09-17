@@ -48,7 +48,13 @@
   .order { display:flex; gap:2px; }
   .order button { padding:4px 8px; }
   .chk { display:flex; align-items:center; gap:4px; color:var(--muted); }
-  .del.confirm { background:var(--warn); color:#fff; border-color:var(--warn); }
+  .cats { display:flex; gap:10px; }
+  .merge { max-width:160px; }
+  .cats .chk { color:var(--ink); }
+  .chips { display:flex; flex-wrap:wrap; gap:3px; margin-top:4px; }
+  .chip { font-size:11px; padding:1px 7px; border-radius:10px; color:var(--muted); }
+  .chip.on { background:var(--ink); color:#fff; border-color:var(--ink); }
+  .del.confirm, button.confirm { background:var(--warn); color:#fff; border-color:var(--warn); }
   .empty-note { color:var(--muted); font-size:13px; }
 
   .strip { display:flex; flex-wrap:wrap; gap:10px; margin-top:12px; align-items:flex-start; }
@@ -101,7 +107,7 @@
     <button id="save" class="primary" disabled>Saved</button>
     <div id="status" role="status"></div>
   </header>
-  <p class="help">Drag a photo onto another project to move it. The first photo in each project is its cover. Nothing goes live until you click Save changes.</p>
+  <p class="help">Drag a photo onto another project to move it. The first photo in each project is its cover. When a project has more than one category, use the small labels under each photo to say which craft it shows. Nothing goes live until you click Save changes.</p>
   <main id="list"></main>
   <section id="looseBox" class="loose">
     <h2>Loose photos</h2>
@@ -115,6 +121,8 @@ const REPO = { owner: "Minacce23", name: "handmade", branch: "main" };
 const API = `https://api.github.com/repos/${REPO.owner}/${REPO.name}`;
 const RAW = `https://raw.githubusercontent.com/${REPO.owner}/${REPO.name}/${REPO.branch}/images/`;
 const CATS = { sewing: "Sewing", crochet: "Crochet", knitting: "Knitting" };
+const SHORT = { sewing: "Sew", crochet: "Crochet", knitting: "Knit" };
+const ORDER = Object.keys(CATS);
 
 let token = "", projects = [], repoImages = [], uploads = {}, previews = {}, dirty = false, drag = null;
 const $ = s => document.querySelector(s);
@@ -163,7 +171,13 @@ $("#signOut").onclick = () => {
 async function load() {
   const file = await gh(`/contents/projects.js?ref=${REPO.branch}`);
   projects = new Function(decode(file.content) + "\n;return PROJECTS;")();
-  projects.forEach(p => { p.date = p.date || ""; p.hidden = !!p.hidden; p.photos = p.photos || []; });
+  projects.forEach(p => {
+    p.date = p.date || ""; p.hidden = !!p.hidden; p.photos = p.photos || [];
+    p.categories = (p.categories || [p.category]).filter(c => CATS[c]);
+    if (!p.categories.length) p.categories = ["sewing"];
+    delete p.category;
+    p.photoTags = p.photoTags || {};
+  });
   let imgs = [];
   try { imgs = await gh(`/contents/images?ref=${REPO.branch}`); } catch (e) { if (e.code !== 404) throw e; }
   repoImages = imgs.filter(i => i.type === "file" && /\.(jpe?g|png|webp|gif)$/i.test(i.name)).map(i => i.name);
@@ -192,16 +206,23 @@ function confirmTwice(btn, label) {
 
 function thisMonth() { return new Date().toISOString().slice(0, 7); }
 function newProject(from) {
-  return { title: "New project", category: from ? from.category : "sewing", date: from ? from.date : thisMonth(), hidden: false, photos: [] };
+  return { title: "New project", categories: from ? [...from.categories] : ["sewing"], date: from ? from.date : thisMonth(), hidden: false, photos: [], photoTags: {} };
+}
+
+// Labels on a photo. No saved label means "all of the project's categories".
+function photoCats(p, n) {
+  const t = (p.photoTags[n] || []).filter(c => p.categories.includes(c));
+  return t.length ? t : p.categories;
 }
 
 function movePhoto(name, fromIdx, to) {
   const src = fromIdx >= 0 ? projects[fromIdx] : null;
   let dest = to === "loose" ? null : to === "new" ? newProject(src) : projects[+to];
   if (dest && dest === src) return;
-  if (src) src.photos.splice(src.photos.indexOf(name), 1);
+  const tags = src ? photoCats(src, name) : null;
+  if (src) { src.photos.splice(src.photos.indexOf(name), 1); delete src.photoTags[name]; }
   if (to === "new") projects.splice(fromIdx >= 0 ? fromIdx + 1 : 0, 0, dest);
-  if (dest) dest.photos.push(name);
+  if (dest) { dest.photos.push(name); if (tags) dest.photoTags[name] = tags; }
   if (src && !src.photos.length) projects.splice(projects.indexOf(src), 1);
   changed();
   if (to === "new") focusTitle(projects.indexOf(dest));
@@ -245,7 +266,7 @@ async function addFiles(files, p) {
   for (const f of files) {
     try {
       const { data, b64 } = await shrink(f);
-      const name = `${p.category}-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}.jpg`;
+      const name = `${p.categories[0]}-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}.jpg`;
       uploads[name] = b64; previews[name] = data;
       p.photos.push(name);
       if (!p.date && f.lastModified) p.date = new Date(f.lastModified).toISOString().slice(0, 7);
@@ -273,10 +294,22 @@ function tile(name, pi, k) {
       ${pi >= 0 && k > 0 ? '<button data-t="cover" title="Make this the cover">&#9733;</button><button data-t="left" title="Move left">&lsaquo;</button>' : ""}
       ${pi >= 0 && k < p.photos.length - 1 ? '<button data-t="right" title="Move right">&rsaquo;</button>' : ""}
       ${moveMenu(pi)}
-    </div>`;
+    </div>
+    ${pi >= 0 && p.categories.length > 1 ? `<div class="chips" title="Which crafts this photo shows">${p.categories.map(c => `<button class="chip${photoCats(p, name).includes(c) ? " on" : ""}" data-c="${c}">${SHORT[c]}</button>`).join("")}</div>` : ""}`;
   t.addEventListener("dragstart", e => { drag = { name, from: pi }; e.dataTransfer.setData("text/plain", name); e.dataTransfer.effectAllowed = "move"; });
   t.addEventListener("dragend", () => { drag = null; });
-  t.querySelectorAll("button").forEach(b => b.onclick = () => {
+  t.querySelectorAll(".chip").forEach(b => b.onclick = () => {
+    const c = b.dataset.c;
+    let now = photoCats(p, name);
+    if (now.includes(c)) {
+      if (now.length === 1) { status("Each photo needs at least one label.", true); return; }
+      now = now.filter(x => x !== c);
+    } else now = [...now, c];
+    now = ORDER.filter(x => now.includes(x));
+    if (now.length === p.categories.length) delete p.photoTags[name]; else p.photoTags[name] = now;
+    changed();
+  });
+  t.querySelectorAll(".tools button").forEach(b => b.onclick = () => {
     const a = p.photos;
     if (b.dataset.t === "cover") { a.splice(k, 1); a.unshift(name); }
     if (b.dataset.t === "left") { [a[k - 1], a[k]] = [a[k], a[k - 1]]; }
@@ -310,7 +343,7 @@ function render() {
           <button data-a="down" title="Move project down" ${i === projects.length - 1 ? "disabled" : ""}>&darr;</button>
         </div>
         <input type="text" class="title" value="${esc(p.title)}" aria-label="Project title">
-        <select class="cat" aria-label="Category">${Object.entries(CATS).map(([k, v]) => `<option value="${k}"${k === p.category ? " selected" : ""}>${v}</option>`).join("")}</select>
+        <div class="cats" role="group" aria-label="Categories">${Object.entries(CATS).map(([k, v]) => `<label class="chk"><input type="checkbox" value="${k}"${p.categories.includes(k) ? " checked" : ""}> ${v}</label>`).join("")}</div>
         <input type="month" class="date" value="${esc(p.date)}" aria-label="Month finished" title="Month finished (clear it to hide the date)">
         <label class="chk"><input type="checkbox" class="hid"${p.hidden ? " checked" : ""}> Hide</label>
         ${projects.length > 1 ? `<select class="merge" aria-label="Merge project"><option value="">Merge into...</option>${projects.map((q, j) => j === i ? "" : `<option value="${j}">${esc(q.title)}</option>`).join("")}</select>` : ""}
@@ -328,7 +361,12 @@ function render() {
 
     el.querySelector(".title").oninput = e => { p.title = e.target.value; changed(false); };
     el.querySelector(".title").onchange = () => render();
-    el.querySelector(".cat").onchange = e => { p.category = e.target.value; changed(false); };
+    el.querySelectorAll(".cats input").forEach(cb => cb.onchange = () => {
+      const picked = [...el.querySelectorAll(".cats input:checked")].map(x => x.value);
+      if (!picked.length) { cb.checked = true; status("A project needs at least one category.", true); return; }
+      p.categories = picked;
+      changed();
+    });
     el.querySelector(".date").onchange = e => { p.date = e.target.value; changed(false); };
     el.querySelector(".hid").onchange = e => { p.hidden = e.target.checked; changed(); };
     const merge = el.querySelector(".merge");
@@ -336,6 +374,9 @@ function render() {
       if (e.target.value === "") return;
       const target = projects[+e.target.value];
       target.photos.push(...p.photos);
+      p.photos.forEach(n => { target.photoTags[n] = photoCats(p, n); });
+      p.categories.forEach(c => { if (!target.categories.includes(c)) target.categories.push(c); });
+      target.categories = ORDER.filter(c => target.categories.includes(c));
       projects.splice(i, 1);
       changed();
       status(`Merged "${p.title}" into "${target.title}". Click Save changes to publish.`);
@@ -372,12 +413,22 @@ $("#sortDate").onclick = () => {
 
 // ---------- save ----------
 function toJS() {
-  const lines = projects.map(p => "  " + JSON.stringify({
-    title: p.title.trim() || "Untitled", category: p.category, date: p.date || "",
-    ...(p.hidden ? { hidden: true } : {}), photos: p.photos
-  }));
+  const lines = projects.map(p => {
+    const tags = {};
+    p.photos.forEach(n => {
+      const t = photoCats(p, n);
+      if (t.length < p.categories.length) tags[n] = t;
+    });
+    return "  " + JSON.stringify({
+      title: p.title.trim() || "Untitled", categories: p.categories, date: p.date || "",
+      ...(p.hidden ? { hidden: true } : {}), photos: p.photos,
+      ...(Object.keys(tags).length ? { photoTags: tags } : {})
+    });
+  });
   return `// Your projects. Edit them at /handmade/admin/ or by hand here.
-// category: "sewing", "crochet", or "knitting". The first photo is the cover.
+// categories: any of "sewing", "crochet", "knitting". The first photo is the cover.
+// photoTags (optional): labels for single photos, e.g. {"a.jpg": ["knitting"]}.
+// Photos without a label count for all of the project's categories.
 // date: "YYYY-MM", or "" to hide it. hidden: true keeps a project off the site.
 // Projects appear on the site in this order.
 const PROJECTS = [

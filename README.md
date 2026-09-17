@@ -5,7 +5,8 @@ Live at https://minacce23.github.io/handmade/
 
 ## Editing projects (admin page)
 Go to https://minacce23.github.io/handmade/admin/ and sign in with your GitHub key.
-From there you can rename projects, change category and date, group or split photos,
+From there you can rename projects, change categories and date, group or split photos,
+label single photos (for example crochet vs. knit in a mixed project),
 choose cover photos, upload new photos, reorder, hide, and delete projects.
 Nothing goes live until you click Save changes. The site updates a minute or two later.
 
