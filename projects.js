@@ -5,7 +5,8 @@
 // date: "YYYY-MM", or "" to hide it. hidden: true keeps a project off the site.
 // Projects appear on the site in this order.
 const PROJECTS = [
-  {"title":"Wendigo Corset","categories":["sewing"],"date":"2026-09","photos":["sewing-mu4zgxxeh7md-emu4zhkps.jpg","sewing-mu4zhdh0fjrz.jpg","sewing-mu4zhdizoplg.jpg"]},
+  {"title":"Sungod Tank","categories":["crochet"],"date":"2022-04","photos":["sewing-mu4zlpzpir4v-emu4zm35b.jpg","sewing-mu4zlq05wui3.jpg"]},
+  {"title":"Wendigo Corset","categories":["sewing"],"date":"2024-09","photos":["sewing-mu4zgxxeh7md-emu4zhkps.jpg","sewing-mu4zhdh0fjrz.jpg","sewing-mu4zhdizoplg.jpg"]},
   {"title":"Pullover Sweater Vest","categories":["knitting"],"date":"2024-09","photos":["knitting-mu4yq8au8ao9-emu4yqet7.jpg","knitting-mu4yq8cf5mp0-emu4yqlq7.jpg","knitting-mu4yq8flnntr-emu4yqpor.jpg"]},
   {"title":"Rainbow Poppy Tee","categories":["knitting"],"date":"2024-09","photos":["sewing-mu4ynuf1omsg-emu4yoaf4.jpg"]},
   {"title":"Hello Kitty Cross Body Bag","categories":["sewing"],"date":"2026-09","photos":["sewing-mu4ylcf13d35-emu4yliac.jpg","sewing-mu4ylcid0wtt.jpg"]},
