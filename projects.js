@@ -5,6 +5,7 @@
 // date: "YYYY-MM", or "" to hide it. hidden: true keeps a project off the site.
 // Projects appear on the site in this order.
 const PROJECTS = [
+  {"title":"Periwinkle Poppy Tee","categories":["knitting"],"date":"2024-08","photos":["knitting-mu5158v21608-emu515emc.jpg"]},
   {"title":"Chicken Sock","categories":["knitting"],"date":"2024-04","photos":["knitting-mu50tg0tulv4.jpg"]},
   {"title":"Powerpuff Sweater","categories":["crochet"],"date":"2022-01","photos":["crochet-mu50rwfrmr06.jpg"]},
   {"title":"Froggy Hat","categories":["sewing"],"date":"2021-12","photos":["sewing-mu50gaexgdba.jpg","sewing-mu50gagdm2xs.jpg"]},
@@ -13,7 +14,7 @@ const PROJECTS = [
   {"title":"Starburst Sweater","categories":["knitting"],"date":"2024-05","photos":["sewing-mu4zngs9x4bs-emu4znuav.jpg","sewing-mu4zngoo89i6-emu4zo2fd.jpg"]},
   {"title":"Sungod Tank","categories":["crochet"],"date":"2022-04","photos":["sewing-mu4zlpzpir4v-emu4zm35b.jpg","sewing-mu4zlq05wui3.jpg"]},
   {"title":"Wendigo Corset + Witch Hat","categories":["sewing","crochet"],"date":"2024-09","photos":["sewing-mu4zgxxeh7md-emu4zhkps.jpg","sewing-mu4zhdh0fjrz.jpg","sewing-mu4zhdizoplg.jpg"],"photoTags":{"sewing-mu4zgxxeh7md-emu4zhkps.jpg":["sewing"]}},
-  {"title":"Pullover Sweater Vest","categories":["knitting"],"date":"2024-09","photos":["knitting-mu4yq8au8ao9-emu4yqet7.jpg","knitting-mu4yq8cf5mp0-emu4yqlq7.jpg","knitting-mu4yq8flnntr-emu4yqpor.jpg"]},
+  {"title":"Pullover Sweater Vest","categories":["knitting"],"date":"2024-09","photos":["knitting-mu4yq8au8ao9-emu4yqet7.jpg","knitting-mu4yq8cf5mp0-emu4yqlq7.jpg","knitting-mu4yq8flnntr-emu4yqpor.jpg","knitting-mu5141dp3au0.jpg"]},
   {"title":"Rainbow Poppy Tee","categories":["knitting"],"date":"2024-09","photos":["sewing-mu4ynuf1omsg-emu4yoaf4.jpg"]},
   {"title":"Hello Kitty Cross Body Bag","categories":["sewing"],"date":"2025-09","photos":["sewing-mu4ylcf13d35-emu4yliac.jpg","sewing-mu4ylcid0wtt.jpg","sewing-mu510l9s2plz.jpg"]},
   {"title":"Hello Kitty Mini Backpack","categories":["sewing"],"date":"2025-03","photos":["sewing-mu4yfw557c5c.jpg","sewing-mu4yfw9r5lom.jpg","sewing-mu4yfwdbpvks.jpg"]},
