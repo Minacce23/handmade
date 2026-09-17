@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Admin | Handmade by Kennedy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#fbfaf8; --card:#fff; --ink:#1d1c1a; --muted:#8a8680; --line:#e7e4df; --accent:#1d1c1a; --warn:#b3261e; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:14px/1.5 Inter, system-ui, sans-serif; }
+  [hidden] { display:none !important; }
+  h1 { font:400 44px/1 "Cormorant Garamond", serif; margin:0; }
+  h1 em { font-style:italic; }
+  h2 { font:400 26px "Cormorant Garamond", serif; margin:0 0 4px; }
+  button, select, input { font:inherit; color:inherit; }
+  button, select { background:var(--card); border:1px solid var(--line); padding:6px 10px; cursor:pointer; border-radius:2px; }
+  button:hover:not(:disabled), select:hover { border-color:var(--ink); }
+  button:disabled { opacity:.45; cursor:default; }
+  .primary { background:var(--accent); color:#fff; border-color:var(--accent); }
+  input[type=text], input[type=password], input[type=month] { border:1px solid var(--line); background:var(--card); padding:6px 10px; border-radius:2px; }
+  input:focus, select:focus, button:focus-visible { outline:2px solid var(--ink); outline-offset:1px; }
+
+  .login { max-width:420px; margin:12vh auto; padding:0 16px; text-align:center; }
+  .login p.sub { color:var(--muted); letter-spacing:.14em; text-transform:uppercase; font-size:11px; margin:10px 0 28px; }
+  .login input { width:100%; margin-bottom:10px; padding:10px 12px; }
+  .login button { width:100%; padding:10px; }
+  .msg { color:var(--warn); min-height:1.5em; }
+  details { text-align:left; margin-top:24px; color:var(--muted); }
+  details summary { cursor:pointer; color:var(--ink); }
+  details li { margin:6px 0; }
+
+  .bar { position:sticky; top:0; z-index:5; background:var(--bg); border-bottom:1px solid var(--line); padding:12px 24px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+  .bar .name { font:400 22px "Cormorant Garamond", serif; margin-right:auto; }
+  .bar a { color:var(--ink); padding:6px 4px; }
+  #status { flex-basis:100%; color:var(--muted); font-size:13px; min-height:1.3em; }
+  #status.bad { color:var(--warn); }
+  .help { max-width:1100px; margin:16px auto 0; padding:0 24px; color:var(--muted); font-size:13px; }
+
+  main { max-width:1100px; margin:0 auto; padding:16px 24px; display:flex; flex-direction:column; gap:14px; }
+  .proj { background:var(--card); border:1px solid var(--line); padding:14px; }
+  .proj.over, .loose.over { outline:2px dashed var(--ink); outline-offset:-4px; }
+  .proj.is-hidden { opacity:.55; }
+  .row { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+  .row .title { flex:1 1 220px; font:400 20px "Cormorant Garamond", serif; }
+  .order { display:flex; gap:2px; }
+  .order button { padding:4px 8px; }
+  .chk { display:flex; align-items:center; gap:4px; color:var(--muted); }
+  .del.confirm { background:var(--warn); color:#fff; border-color:var(--warn); }
+  .empty-note { color:var(--muted); font-size:13px; }
+
+  .strip { display:flex; flex-wrap:wrap; gap:10px; margin-top:12px; align-items:flex-start; }
+  .tile { width:120px; position:relative; }
+  .tile img { width:120px; height:150px; object-fit:cover; display:block; background:var(--line); cursor:grab; }
+  .tile .badge { position:absolute; top:6px; left:6px; background:rgba(255,255,255,.92); font-size:10px; letter-spacing:.1em; text-transform:uppercase; padding:1px 6px; }
+  .tile .new { position:absolute; top:6px; right:6px; background:var(--ink); color:#fff; font-size:10px; padding:1px 6px; }
+  .tools { display:flex; flex-wrap:wrap; gap:3px; margin-top:4px; }
+  .tools button { padding:2px 7px; }
+  .tools select { flex:1 0 100%; min-width:0; padding:2px 4px; font-size:12px; }
+  .add { width:120px; height:150px; border:1px dashed var(--line); display:flex; align-items:center; justify-content:center; text-align:center; color:var(--muted); cursor:pointer; font-size:13px; }
+  .add:hover { border-color:var(--ink); color:var(--ink); }
+  .add input { display:none; }
+
+  .loose { max-width:1100px; margin:8px auto 60px; padding:16px 24px; }
+  .loose p { color:var(--muted); margin:0; font-size:13px; }
+  @media (max-width:600px) { .bar { padding:10px 16px; } main, .loose, .help { padding-left:16px; padding-right:16px; } .tile, .tile img, .add { width:100px; } .tile img, .add { height:125px; } }
+</style>
+</head>
+<body>
+
+<section id="login" class="login">
+  <h1>Handmade <em>by</em> Kennedy</h1>
+  <p class="sub">Admin</p>
+  <form id="loginForm">
+    <input id="tokenIn" type="password" placeholder="Paste your GitHub key" autocomplete="current-password" aria-label="GitHub key">
+    <button class="primary" type="submit">Sign in</button>
+  </form>
+  <p id="loginMsg" class="msg"></p>
+  <details>
+    <summary>How do I get a key?</summary>
+    <ol>
+      <li>On GitHub, click your profile picture, then <b>Settings</b>, then <b>Developer settings</b> (bottom of the left sidebar).</li>
+      <li>Choose <b>Personal access tokens</b>, then <b>Fine-grained tokens</b>, then <b>Generate new token</b>.</li>
+      <li>Name it "Handmade admin" and pick an expiration (1 year is fine).</li>
+      <li>Under <b>Repository access</b>, choose <b>Only select repositories</b> and pick <b>handmade</b>.</li>
+      <li>Under <b>Permissions</b>, set <b>Contents</b> to <b>Read and write</b>.</li>
+      <li>Click <b>Generate token</b>, copy it, and paste it above. This browser remembers it until you sign out.</li>
+    </ol>
+  </details>
+</section>
+
+<div id="app" hidden>
+  <header class="bar">
+    <span class="name">Handmade admin</span>
+    <button id="addProject">+ New project</button>
+    <button id="sortDate">Sort by date</button>
+    <a href="../" target="_blank" rel="noopener">View site</a>
+    <button id="signOut">Sign out</button>
+    <button id="save" class="primary" disabled>Saved</button>
+    <div id="status" role="status"></div>
+  </header>
+  <p class="help">Drag a photo onto another project to move it. The first photo in each project is its cover. Nothing goes live until you click Save changes.</p>
+  <main id="list"></main>
+  <section id="looseBox" class="loose">
+    <h2>Loose photos</h2>
+    <p>Photos that are not in any project (they stay saved). Drag one onto a project, or use its Move menu.</p>
+    <div id="loose" class="strip"></div>
+  </section>
+</div>
+
+<script>
+const REPO = { owner: "Minacce23", name: "handmade", branch: "main" };
+const API = `https://api.github.com/repos/${REPO.owner}/${REPO.name}`;
+const RAW = `https://raw.githubusercontent.com/${REPO.owner}/${REPO.name}/${REPO.branch}/images/`;
+const CATS = { sewing: "Sewing", crochet: "Crochet", knitting: "Knitting" };
+
+let token = "", projects = [], repoImages = [], uploads = {}, previews = {}, dirty = false, drag = null;
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const remember = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) {} };
+const recall = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+
+function status(msg, bad) { const s = $("#status"); s.textContent = msg || ""; s.classList.toggle("bad", !!bad); }
+
+async function gh(path, opts = {}) {
+  const headers = { Authorization: "Bearer " + token, Accept: "application/vnd.github+json" };
+  if (opts.body) headers["Content-Type"] = "application/json";
+  const r = await fetch(API + path, { ...opts, headers, cache: "no-store" });
+  if (!r.ok) { const e = new Error(`${r.status} ${(await r.text()).slice(0, 160)}`); e.code = r.status; throw e; }
+  return r.status === 204 ? null : r.json();
+}
+const decode = b64 => new TextDecoder().decode(Uint8Array.from(atob(b64.replace(/\s/g, "")), c => c.charCodeAt(0)));
+
+// ---------- sign in ----------
+async function signIn(t) {
+  token = t.trim();
+  if (!token) return;
+  $("#loginMsg").textContent = "Checking...";
+  try {
+    const repo = await gh("");
+    if (repo.permissions && !repo.permissions.push) throw new Error("This key can view the site but not edit it. Give it Contents: Read and write.");
+    await load();
+    remember("hbk-token", token);
+    $("#login").hidden = true; $("#app").hidden = false;
+  } catch (e) {
+    remember("hbk-token", null);
+    token = "";
+    $("#loginMsg").textContent =
+      e.code === 401 ? "That key didn't work. Check that it was copied fully and hasn't expired." :
+      e.code === 404 ? "This key can't see the handmade repository. Check its Repository access setting." :
+      e.message;
+  }
+}
+$("#loginForm").onsubmit = e => { e.preventDefault(); signIn($("#tokenIn").value); };
+$("#signOut").onclick = () => {
+  if (dirty && !confirmTwice($("#signOut"), "Discard changes?")) return;
+  remember("hbk-token", null); location.reload();
+};
+
+// ---------- load ----------
+async function load() {
+  const file = await gh(`/contents/projects.js?ref=${REPO.branch}`);
+  projects = new Function(decode(file.content) + "\n;return PROJECTS;")();
+  projects.forEach(p => { p.date = p.date || ""; p.hidden = !!p.hidden; p.photos = p.photos || []; });
+  let imgs = [];
+  try { imgs = await gh(`/contents/images?ref=${REPO.branch}`); } catch (e) { if (e.code !== 404) throw e; }
+  repoImages = imgs.filter(i => i.type === "file" && /\.(jpe?g|png|webp|gif)$/i.test(i.name)).map(i => i.name);
+  uploads = {};
+  setDirty(false);
+  render();
+}
+
+// ---------- editing ----------
+function setDirty(d) {
+  dirty = d;
+  const b = $("#save");
+  b.disabled = !d;
+  b.textContent = d ? "Save changes" : "Saved";
+  if (d) status("You have unsaved changes.");
+}
+function changed(rerender = true) { setDirty(true); if (rerender) render(); }
+
+function confirmTwice(btn, label) {
+  if (btn.dataset.armed) { delete btn.dataset.armed; return true; }
+  const old = btn.textContent;
+  btn.dataset.armed = "1"; btn.textContent = label; btn.classList.add("confirm");
+  setTimeout(() => { delete btn.dataset.armed; btn.textContent = old; btn.classList.remove("confirm"); }, 3000);
+  return false;
+}
+
+function thisMonth() { return new Date().toISOString().slice(0, 7); }
+function newProject(from) {
+  return { title: "New project", category: from ? from.category : "sewing", date: from ? from.date : thisMonth(), hidden: false, photos: [] };
+}
+
+function movePhoto(name, fromIdx, to) {
+  const src = fromIdx >= 0 ? projects[fromIdx] : null;
+  let dest = to === "loose" ? null : to === "new" ? newProject(src) : projects[+to];
+  if (dest && dest === src) return;
+  if (src) src.photos.splice(src.photos.indexOf(name), 1);
+  if (to === "new") projects.splice(fromIdx >= 0 ? fromIdx + 1 : 0, 0, dest);
+  if (dest) dest.photos.push(name);
+  if (src && !src.photos.length) projects.splice(projects.indexOf(src), 1);
+  changed();
+  if (to === "new") focusTitle(projects.indexOf(dest));
+}
+
+function focusTitle(i) {
+  const el = document.querySelectorAll("#list .title")[i];
+  if (el) { el.scrollIntoView({ block: "center" }); el.select(); }
+}
+
+function loosePhotos() {
+  const used = new Set(projects.flatMap(p => p.photos));
+  return [...new Set([...repoImages, ...Object.keys(uploads)])].filter(n => !used.has(n)).sort();
+}
+
+const imgSrc = n => previews[n] || RAW + encodeURIComponent(n);
+
+// ---------- photo upload ----------
+function shrink(file) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => {
+      const s = Math.min(1, 1600 / Math.max(img.naturalWidth, img.naturalHeight));
+      const c = document.createElement("canvas");
+      c.width = Math.round(img.naturalWidth * s); c.height = Math.round(img.naturalHeight * s);
+      const ctx = c.getContext("2d");
+      ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, c.width, c.height);
+      ctx.drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      const data = c.toDataURL("image/jpeg", 0.82);
+      resolve({ data, b64: data.split(",")[1] });
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("unreadable")); };
+    img.src = url;
+  });
+}
+
+async function addFiles(files, p) {
+  const failed = [];
+  status("Preparing photos...");
+  for (const f of files) {
+    try {
+      const { data, b64 } = await shrink(f);
+      const name = `${p.category}-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}.jpg`;
+      uploads[name] = b64; previews[name] = data;
+      p.photos.push(name);
+      if (!p.date && f.lastModified) p.date = new Date(f.lastModified).toISOString().slice(0, 7);
+    } catch (e) { failed.push(f.name); }
+  }
+  changed();
+  if (failed.length) status(`Couldn't read ${failed.join(", ")}. If these are iPhone HEIC photos, try uploading from Safari or export them as JPG first.`, true);
+}
+
+// ---------- render ----------
+function moveMenu(fromIdx) {
+  const opts = projects.map((q, j) => j === fromIdx ? "" : `<option value="${j}">${esc(q.title)}</option>`).join("");
+  return `<select data-t="move" aria-label="Move photo"><option value="">Move...</option>${opts}<option value="new">+ New project</option>${fromIdx >= 0 ? '<option value="loose">Loose photos</option>' : ""}</select>`;
+}
+
+function tile(name, pi, k) {
+  const p = projects[pi];
+  const t = document.createElement("div");
+  t.className = "tile";
+  t.draggable = true;
+  t.innerHTML = `<img loading="lazy" src="${esc(imgSrc(name))}" alt="" draggable="false">
+    ${pi >= 0 && k === 0 ? '<span class="badge">Cover</span>' : ""}
+    ${uploads[name] ? '<span class="new">New</span>' : ""}
+    <div class="tools">
+      ${pi >= 0 && k > 0 ? '<button data-t="cover" title="Make this the cover">&#9733;</button><button data-t="left" title="Move left">&lsaquo;</button>' : ""}
+      ${pi >= 0 && k < p.photos.length - 1 ? '<button data-t="right" title="Move right">&rsaquo;</button>' : ""}
+      ${moveMenu(pi)}
+    </div>`;
+  t.addEventListener("dragstart", e => { drag = { name, from: pi }; e.dataTransfer.setData("text/plain", name); e.dataTransfer.effectAllowed = "move"; });
+  t.addEventListener("dragend", () => { drag = null; });
+  t.querySelectorAll("button").forEach(b => b.onclick = () => {
+    const a = p.photos;
+    if (b.dataset.t === "cover") { a.splice(k, 1); a.unshift(name); }
+    if (b.dataset.t === "left") { [a[k - 1], a[k]] = [a[k], a[k - 1]]; }
+    if (b.dataset.t === "right") { [a[k + 1], a[k]] = [a[k], a[k + 1]]; }
+    changed();
+  });
+  t.querySelector("select").onchange = e => { if (e.target.value) movePhoto(name, pi, e.target.value); };
+  return t;
+}
+
+function dropZone(el, target) {
+  el.addEventListener("dragover", e => { if (drag) { e.preventDefault(); el.classList.add("over"); } });
+  el.addEventListener("dragleave", e => { if (!el.contains(e.relatedTarget)) el.classList.remove("over"); });
+  el.addEventListener("drop", e => {
+    e.preventDefault(); el.classList.remove("over");
+    if (drag) movePhoto(drag.name, drag.from, target);
+  });
+}
+
+function render() {
+  const list = $("#list");
+  list.innerHTML = "";
+  if (!projects.length) list.innerHTML = '<p class="empty-note">No projects yet. Click + New project to add one.</p>';
+  projects.forEach((p, i) => {
+    const el = document.createElement("article");
+    el.className = "proj" + (p.hidden ? " is-hidden" : "");
+    el.innerHTML = `
+      <div class="row">
+        <div class="order">
+          <button data-a="up" title="Move project up" ${i === 0 ? "disabled" : ""}>&uarr;</button>
+          <button data-a="down" title="Move project down" ${i === projects.length - 1 ? "disabled" : ""}>&darr;</button>
+        </div>
+        <input type="text" class="title" value="${esc(p.title)}" aria-label="Project title">
+        <select class="cat" aria-label="Category">${Object.entries(CATS).map(([k, v]) => `<option value="${k}"${k === p.category ? " selected" : ""}>${v}</option>`).join("")}</select>
+        <input type="month" class="date" value="${esc(p.date)}" aria-label="Month finished" title="Month finished (clear it to hide the date)">
+        <label class="chk"><input type="checkbox" class="hid"${p.hidden ? " checked" : ""}> Hide</label>
+        ${projects.length > 1 ? `<select class="merge" aria-label="Merge project"><option value="">Merge into...</option>${projects.map((q, j) => j === i ? "" : `<option value="${j}">${esc(q.title)}</option>`).join("")}</select>` : ""}
+        <button data-a="del">Delete</button>
+      </div>
+      <div class="strip"></div>
+      ${p.photos.length ? "" : '<p class="empty-note">No photos yet, so this project won\'t show on the site.</p>'}`;
+    const strip = el.querySelector(".strip");
+    p.photos.forEach((n, k) => strip.appendChild(tile(n, i, k)));
+    const add = document.createElement("label");
+    add.className = "add";
+    add.innerHTML = '+ Add photos<input type="file" accept="image/*" multiple>';
+    add.querySelector("input").onchange = e => { addFiles([...e.target.files], p); e.target.value = ""; };
+    strip.appendChild(add);
+
+    el.querySelector(".title").oninput = e => { p.title = e.target.value; changed(false); };
+    el.querySelector(".title").onchange = () => render();
+    el.querySelector(".cat").onchange = e => { p.category = e.target.value; changed(false); };
+    el.querySelector(".date").onchange = e => { p.date = e.target.value; changed(false); };
+    el.querySelector(".hid").onchange = e => { p.hidden = e.target.checked; changed(); };
+    const merge = el.querySelector(".merge");
+    if (merge) merge.onchange = e => {
+      if (e.target.value === "") return;
+      const target = projects[+e.target.value];
+      target.photos.push(...p.photos);
+      projects.splice(i, 1);
+      changed();
+      status(`Merged "${p.title}" into "${target.title}". Click Save changes to publish.`);
+    };
+    el.querySelectorAll("[data-a]").forEach(b => b.onclick = () => {
+      const a = b.dataset.a;
+      if (a === "up") [projects[i - 1], projects[i]] = [projects[i], projects[i - 1]];
+      if (a === "down") [projects[i + 1], projects[i]] = [projects[i], projects[i + 1]];
+      if (a === "del") {
+        if (!confirmTwice(b, "Click again to delete")) return;
+        projects.splice(i, 1);
+        status(`Deleted "${p.title}". Its photos moved to Loose photos.`);
+      }
+      changed();
+    });
+    dropZone(el, i);
+    list.appendChild(el);
+  });
+
+  const loose = $("#loose");
+  loose.innerHTML = "";
+  const lp = loosePhotos();
+  lp.forEach(n => loose.appendChild(tile(n, -1, 0)));
+  if (!lp.length) loose.innerHTML = '<p>None right now.</p>';
+}
+dropZone($("#looseBox"), "loose");
+
+$("#addProject").onclick = () => { projects.unshift(newProject()); changed(); focusTitle(0); };
+$("#sortDate").onclick = () => {
+  projects.sort((a, b) => (b.date || "0").localeCompare(a.date || "0"));
+  changed();
+  status("Sorted newest first. Projects without a date are at the end.");
+};
+
+// ---------- save ----------
+function toJS() {
+  const lines = projects.map(p => "  " + JSON.stringify({
+    title: p.title.trim() || "Untitled", category: p.category, date: p.date || "",
+    ...(p.hidden ? { hidden: true } : {}), photos: p.photos
+  }));
+  return `// Your projects. Edit them at /handmade/admin/ or by hand here.
+// category: "sewing", "crochet", or "knitting". The first photo is the cover.
+// date: "YYYY-MM", or "" to hide it. hidden: true keeps a project off the site.
+// Projects appear on the site in this order.
+const PROJECTS = [
+${lines.length ? lines.join(",\n") + ",\n" : ""}];
+`;
+}
+
+$("#save").onclick = async () => {
+  const btn = $("#save");
+  btn.disabled = true; btn.textContent = "Saving...";
+  status("Saving...");
+  try {
+    const ref = await gh(`/git/ref/heads/${REPO.branch}`);
+    const head = await gh(`/git/commits/${ref.object.sha}`);
+    const tree = [];
+    const names = Object.keys(uploads);
+    for (const [n, i] of names.map((n, i) => [n, i])) {
+      status(`Uploading photo ${i + 1} of ${names.length}...`);
+      const blob = await gh("/git/blobs", { method: "POST", body: JSON.stringify({ content: uploads[n], encoding: "base64" }) });
+      tree.push({ path: "images/" + n, mode: "100644", type: "blob", sha: blob.sha });
+    }
+    tree.push({ path: "projects.js", mode: "100644", type: "blob", content: toJS() });
+    const t = await gh("/git/trees", { method: "POST", body: JSON.stringify({ base_tree: head.tree.sha, tree }) });
+    const c = await gh("/git/commits", { method: "POST", body: JSON.stringify({ message: "Update projects from admin page", tree: t.sha, parents: [ref.object.sha] }) });
+    await gh(`/git/refs/heads/${REPO.branch}`, { method: "PATCH", body: JSON.stringify({ sha: c.sha }) });
+    repoImages.push(...names);
+    uploads = {};
+    setDirty(false);
+    render();
+    status("Saved. The live site updates in a minute or two (refresh it to see the changes).");
+  } catch (e) {
+    setDirty(true);
+    status("Save failed, nothing was changed. " + (e.code === 401 ? "Your key may have expired: sign out and sign in again." : e.message), true);
+  }
+};
+
+window.addEventListener("beforeunload", e => { if (dirty) { e.preventDefault(); e.returnValue = ""; } });
+
+const saved = recall("hbk-token");
+if (saved) signIn(saved);
+</script>
+</body>
+</html>

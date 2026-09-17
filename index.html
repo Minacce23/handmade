@@ -59,13 +59,17 @@
 
 <script src="projects.js"></script>
 <script>
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const fmt = d => d ? MONTHS[+d.slice(5,7)-1] + " " + d.slice(0,4) : "";
+// Order comes from projects.js (set it on the admin page). Hidden and empty projects are skipped.
+const SHOWN = PROJECTS.filter(p => !p.hidden && p.photos && p.photos.length);
 const NAMES = { all:"All", sewing:"Sewing", crochet:"Crochet", knitting:"Knitting" };
 const grid = document.getElementById("grid"), nav = document.getElementById("filters");
 document.getElementById("yr").textContent = new Date().getFullYear();
 let current = "all", open = null, idx = 0;
 
 Object.keys(NAMES).forEach(k => {
-  const n = k === "all" ? PROJECTS.length : PROJECTS.filter(p => p.category === k).length;
+  const n = k === "all" ? SHOWN.length : SHOWN.filter(p => p.category === k).length;
   const b = document.createElement("button");
   b.innerHTML = `${NAMES[k]}<span class="n">${n}</span>`;
   b.onclick = () => { current = k; history.replaceState(null, "", k === "all" ? "#" : "#" + k); render(); };
@@ -75,10 +79,10 @@ Object.keys(NAMES).forEach(k => {
 function render() {
   nav.querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.k === current));
   grid.innerHTML = "";
-  PROJECTS.filter(p => current === "all" || p.category === current).forEach(p => {
+  SHOWN.filter(p => current === "all" || p.category === current).forEach(p => {
     const c = document.createElement("article");
     c.className = "card";
-    c.innerHTML = `<div class="img"><img loading="lazy" src="images/${p.photos[0]}" alt="${p.title}">${p.photos.length > 1 ? `<span class="count">${p.photos.length} photos</span>` : ""}</div><h2>${p.title}</h2><p>${NAMES[p.category]}</p>`;
+    c.innerHTML = `<div class="img"><img loading="lazy" src="images/${p.photos[0]}" alt="${p.title}">${p.photos.length > 1 ? `<span class="count">${p.photos.length} photos</span>` : ""}</div><h2>${p.title}</h2><p>${NAMES[p.category]}${p.date ? " &middot; " + fmt(p.date) : ""}</p>`;
     c.onclick = () => show(p, 0);
     grid.appendChild(c);
   });
@@ -90,7 +94,7 @@ function show(p, i) {
   document.getElementById("boxImg").src = "images/" + p.photos[idx];
   document.getElementById("boxImg").alt = p.title;
   document.getElementById("boxTitle").textContent = p.title;
-  document.getElementById("boxInfo").textContent = NAMES[p.category] + (p.photos.length > 1 ? `  ·  ${idx + 1} of ${p.photos.length}` : "");
+  document.getElementById("boxInfo").textContent = NAMES[p.category] + (p.date ? "  ·  " + fmt(p.date) : "") + (p.photos.length > 1 ? `  ·  ${idx + 1} of ${p.photos.length}` : "");
   box.querySelectorAll(".prev,.next").forEach(b => b.style.display = p.photos.length > 1 ? "" : "none");
   box.classList.add("open");
 }
