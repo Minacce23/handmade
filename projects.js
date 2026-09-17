@@ -5,6 +5,7 @@
 // date: "YYYY-MM", or "" to hide it. hidden: true keeps a project off the site.
 // Projects appear on the site in this order.
 const PROJECTS = [
+  {"title":"Froggy Hat","categories":["sewing"],"date":"2021-12","photos":["sewing-mu50gaexgdba.jpg","sewing-mu50gagdm2xs.jpg"]},
   {"title":"Euphoria Sweater Vest + Collared Shirt","categories":["sewing","crochet"],"date":"2020-10","photos":["sewing-mu50e7ml99q0.jpg","sewing-mu50e7kybt72-emu50eez5.jpg"],"photoTags":{"sewing-mu50e7kybt72-emu50eez5.jpg":["crochet"]}},
   {"title":"Leaf Cardigan","categories":["knitting"],"date":"2023-09","photos":["knitting-mu50d0a476zh.jpg"]},
   {"title":"Starburst Sweater","categories":["knitting"],"date":"2024-05","photos":["sewing-mu4zngs9x4bs-emu4znuav.jpg","sewing-mu4zngoo89i6-emu4zo2fd.jpg"]},
@@ -27,7 +28,7 @@ const PROJECTS = [
   {"title":"Textured Stripe Panel","categories":["crochet"],"date":"2022-03","photos":["crochet-07.jpg"]},
   {"title":"Diagonal Stripe Blankets","categories":["crochet"],"date":"2022-02","photos":["crochet-04.jpg","crochet-03.jpg"]},
   {"title":"Cat Ear Beanie","categories":["crochet"],"date":"2022-02","photos":["crochet-05-emu4y7nfb.jpg"]},
-  {"title":"Granny Square Cardigan","categories":["crochet"],"date":"2022-01","photos":["crochet-13.jpg","crochet-14.jpg"]},
+  {"title":"Granny Square Cardigan","categories":["crochet"],"date":"2022-01","photos":["crochet-13.jpg","crochet-14.jpg","crochet-mu50lujpuony.jpg","crochet-mu50luhh3ckv-emu50m96l.jpg","crochet-mu50lul7vhgl-emu50mbm7.jpg"]},
   {"title":"Two-Tone Sweater","categories":["crochet"],"date":"2021-01","photos":["crochet-08.jpg","crochet-mu4zfx6n11xm.jpg"]},
   {"title":"Colorblock Cardigan","categories":["crochet"],"date":"2021-01","photos":["crochet-09-emu4y7tb0.jpg"]},
   {"title":"K Sweater","categories":["crochet"],"date":"2020-11","photos":["crochet-mu4ydpzp4dos.jpg","crochet-01.jpg"]},
