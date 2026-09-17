@@ -11,7 +11,7 @@ const PROJECTS = [
   {"title":"Devil Horns","categories":["crochet"],"date":"2024-12","photos":["crochet-mu51x1mpi4g0-emu51x91p.jpg"]},
   {"title":"Periwinkle Poppy Tee","categories":["knitting"],"date":"2024-08","photos":["knitting-mu5158v21608-emu515emc.jpg"]},
   {"title":"Chicken Sock","categories":["knitting"],"date":"2024-04","photos":["knitting-mu50tg0tulv4.jpg"]},
-  {"title":"Powerpuff Sweater","categories":["crochet"],"date":"2022-01","photos":["crochet-mu50rwfrmr06.jpg","crochet-mu52q992jabn.jpg","crochet-mu52qgky6tyt-emu52qs4e.jpg"]},
+  {"title":"Powerpuff Sweater","categories":["crochet"],"date":"2022-01","photos":["crochet-mu50rwfrmr06.jpg","crochet-mu52q992jabn-emu532apt.jpg","crochet-mu52qgky6tyt-emu52qs4e.jpg"]},
   {"title":"Froggy Hat","categories":["sewing"],"date":"2021-12","photos":["sewing-mu50gaexgdba.jpg","sewing-mu50gagdm2xs.jpg"]},
   {"title":"Euphoria Sweater Vest + Collared Shirt","categories":["sewing","crochet"],"date":"2020-10","photos":["sewing-mu50e7ml99q0.jpg","sewing-mu52rse17p7g.jpg","sewing-mu50e7kybt72-emu50eez5.jpg"],"photoTags":{"sewing-mu50e7kybt72-emu50eez5.jpg":["crochet"]}},
   {"title":"Leaf Cardigan","categories":["knitting"],"date":"2023-01","photos":["knitting-mu50d0a476zh.jpg","knitting-mu50sp8zkgyc.jpg"]},
