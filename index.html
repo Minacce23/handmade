@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Handmade by Kennedy</title>
+<meta name="description" content="Sewing, crochet, and knitting projects by Kennedy Anderson.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#fbfaf8; --ink:#1d1c1a; --muted:#8a8680; --line:#e7e4df; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--bg); color:var(--ink); font:15px/1.6 Inter, system-ui, sans-serif; }
+  header { max-width:1200px; margin:0 auto; padding:72px 24px 32px; text-align:center; }
+  h1 { font:400 clamp(40px,7vw,72px)/1 "Cormorant Garamond", serif; letter-spacing:-.01em; }
+  h1 em { font-style:italic; }
+  .intro { color:var(--muted); margin-top:14px; }
+  nav { display:flex; justify-content:center; gap:28px; flex-wrap:wrap; margin-top:40px; padding-bottom:18px; border-bottom:1px solid var(--line); }
+  nav button { background:none; border:0; font:500 12px Inter, sans-serif; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); cursor:pointer; padding:6px 0; border-bottom:1px solid transparent; }
+  nav button:hover { color:var(--ink); }
+  nav button.on { color:var(--ink); border-color:var(--ink); }
+  nav .n { opacity:.6; margin-left:4px; }
+  main { max-width:1200px; margin:0 auto; padding:24px 24px 80px; display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:36px 24px; }
+  .card { cursor:pointer; }
+  .card .img { aspect-ratio:4/5; overflow:hidden; background:var(--line); position:relative; }
+  .card img { width:100%; height:100%; object-fit:cover; transition:transform .6s ease; }
+  .card:hover img { transform:scale(1.03); }
+  .card .count { position:absolute; right:10px; bottom:10px; background:rgba(255,255,255,.9); font-size:11px; padding:2px 8px; }
+  .card h2 { font:400 22px/1.2 "Cormorant Garamond", serif; margin-top:12px; }
+  .card p { font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); margin-top:2px; }
+  footer { text-align:center; color:var(--muted); font-size:12px; padding:32px 24px 48px; border-top:1px solid var(--line); max-width:1200px; margin:0 auto; }
+  .box { position:fixed; inset:0; background:var(--bg); display:none; flex-direction:column; align-items:center; justify-content:center; padding:24px; z-index:10; }
+  .box.open { display:flex; }
+  .box img { max-width:100%; max-height:78vh; object-fit:contain; }
+  .box .cap { margin-top:16px; text-align:center; }
+  .box .cap h3 { font:400 26px "Cormorant Garamond", serif; }
+  .box .cap span { font-size:12px; color:var(--muted); }
+  .box button { position:absolute; background:none; border:0; font:300 34px Inter, sans-serif; color:var(--ink); cursor:pointer; padding:12px 16px; }
+  .x { top:10px; right:10px; } .prev { left:4px; top:50%; transform:translateY(-50%); } .next { right:4px; top:50%; transform:translateY(-50%); }
+  @media (max-width:600px){ header{padding-top:48px} main{grid-template-columns:1fr 1fr; gap:24px 12px; padding:16px} .card h2{font-size:18px} nav{gap:14px} nav button{letter-spacing:.08em} }
+</style>
+</head>
+<body>
+<header>
+  <h1>Handmade <em>by</em> Kennedy</h1>
+  <p class="intro">Sewing, crochet, and knitting, made in San Diego.</p>
+  <nav id="filters"></nav>
+</header>
+<main id="grid"></main>
+<footer>&copy; <span id="yr"></span> Kennedy Anderson</footer>
+
+<div class="box" id="box" role="dialog" aria-modal="true">
+  <button class="x" aria-label="Close">&times;</button>
+  <button class="prev" aria-label="Previous photo">&#8249;</button>
+  <img id="boxImg" alt="">
+  <div class="cap"><h3 id="boxTitle"></h3><span id="boxInfo"></span></div>
+  <button class="next" aria-label="Next photo">&#8250;</button>
+</div>
+
+<script src="projects.js"></script>
+<script>
+const NAMES = { all:"All", sewing:"Sewing", crochet:"Crochet", knitting:"Knitting" };
+const grid = document.getElementById("grid"), nav = document.getElementById("filters");
+document.getElementById("yr").textContent = new Date().getFullYear();
+let current = "all", open = null, idx = 0;
+
+Object.keys(NAMES).forEach(k => {
+  const n = k === "all" ? PROJECTS.length : PROJECTS.filter(p => p.category === k).length;
+  const b = document.createElement("button");
+  b.innerHTML = `${NAMES[k]}<span class="n">${n}</span>`;
+  b.onclick = () => { current = k; history.replaceState(null, "", k === "all" ? "#" : "#" + k); render(); };
+  b.dataset.k = k; nav.appendChild(b);
+});
+
+function render() {
+  nav.querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.k === current));
+  grid.innerHTML = "";
+  PROJECTS.filter(p => current === "all" || p.category === current).forEach(p => {
+    const c = document.createElement("article");
+    c.className = "card";
+    c.innerHTML = `<div class="img"><img loading="lazy" src="images/${p.photos[0]}" alt="${p.title}">${p.photos.length > 1 ? `<span class="count">${p.photos.length} photos</span>` : ""}</div><h2>${p.title}</h2><p>${NAMES[p.category]}</p>`;
+    c.onclick = () => show(p, 0);
+    grid.appendChild(c);
+  });
+}
+
+const box = document.getElementById("box");
+function show(p, i) {
+  open = p; idx = (i + p.photos.length) % p.photos.length;
+  document.getElementById("boxImg").src = "images/" + p.photos[idx];
+  document.getElementById("boxImg").alt = p.title;
+  document.getElementById("boxTitle").textContent = p.title;
+  document.getElementById("boxInfo").textContent = NAMES[p.category] + (p.photos.length > 1 ? `  ·  ${idx + 1} of ${p.photos.length}` : "");
+  box.querySelectorAll(".prev,.next").forEach(b => b.style.display = p.photos.length > 1 ? "" : "none");
+  box.classList.add("open");
+}
+const close = () => { box.classList.remove("open"); open = null; };
+box.querySelector(".x").onclick = close;
+box.querySelector(".prev").onclick = e => { e.stopPropagation(); show(open, idx - 1); };
+box.querySelector(".next").onclick = e => { e.stopPropagation(); show(open, idx + 1); };
+box.onclick = e => { if (e.target === box) close(); };
+document.onkeydown = e => {
+  if (!open) return;
+  if (e.key === "Escape") close();
+  if (e.key === "ArrowLeft") show(open, idx - 1);
+  if (e.key === "ArrowRight") show(open, idx + 1);
+};
+
+const h = location.hash.slice(1);
+if (NAMES[h]) current = h;
+render();
+</script>
+</body>
+</html>
