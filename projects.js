@@ -5,7 +5,7 @@
 // date: "YYYY-MM", or "" to hide it. hidden: true keeps a project off the site.
 // Projects appear on the site in this order.
 const PROJECTS = [
-  {"title":"Euphoria Sweater Vest + Collared Shirt","categories":["sewing","crochet"],"date":"2026-09","photos":["sewing-mu50e7ml99q0.jpg","sewing-mu50e7kybt72-emu50eez5.jpg"],"photoTags":{"sewing-mu50e7kybt72-emu50eez5.jpg":["crochet"]}},
+  {"title":"Euphoria Sweater Vest + Collared Shirt","categories":["sewing","crochet"],"date":"2020-10","photos":["sewing-mu50e7ml99q0.jpg","sewing-mu50e7kybt72-emu50eez5.jpg"],"photoTags":{"sewing-mu50e7kybt72-emu50eez5.jpg":["crochet"]}},
   {"title":"Leaf Cardigan","categories":["knitting"],"date":"2023-09","photos":["knitting-mu50d0a476zh.jpg"]},
   {"title":"Starburst Sweater","categories":["knitting"],"date":"2024-05","photos":["sewing-mu4zngs9x4bs-emu4znuav.jpg","sewing-mu4zngoo89i6-emu4zo2fd.jpg"]},
   {"title":"Sungod Tank","categories":["crochet"],"date":"2022-04","photos":["sewing-mu4zlpzpir4v-emu4zm35b.jpg","sewing-mu4zlq05wui3.jpg"]},
