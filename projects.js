@@ -5,6 +5,8 @@
 // date: "YYYY-MM", or "" to hide it. hidden: true keeps a project off the site.
 // Projects appear on the site in this order.
 const PROJECTS = [
+  {"title":"Rainbow Placemats","categories":["crochet"],"date":"2023-08","photos":["crochet-mu529kuf3rl2-emu52agkg.jpg"]},
+  {"title":"Pink Oversized Cardigan","categories":["crochet"],"date":"2022-10","photos":["crochet-mu528z27m9o4.jpg","crochet-mu528z3jschy.jpg"]},
   {"title":"Devil Horns","categories":["crochet"],"date":"2024-12","photos":["crochet-mu51x1mpi4g0-emu51x91p.jpg"]},
   {"title":"Periwinkle Poppy Tee","categories":["knitting"],"date":"2024-08","photos":["knitting-mu5158v21608-emu515emc.jpg"]},
   {"title":"Chicken Sock","categories":["knitting"],"date":"2024-04","photos":["knitting-mu50tg0tulv4.jpg"]},
