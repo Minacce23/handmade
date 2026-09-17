@@ -5,6 +5,7 @@
 // date: "YYYY-MM", or "" to hide it. hidden: true keeps a project off the site.
 // Projects appear on the site in this order.
 const PROJECTS = [
+  {"title":"Wendigo Corset","categories":["sewing"],"date":"2026-09","photos":["sewing-mu4zgxxeh7md-emu4zhkps.jpg","sewing-mu4zhdh0fjrz.jpg","sewing-mu4zhdizoplg.jpg"]},
   {"title":"Pullover Sweater Vest","categories":["knitting"],"date":"2024-09","photos":["knitting-mu4yq8au8ao9-emu4yqet7.jpg","knitting-mu4yq8cf5mp0-emu4yqlq7.jpg","knitting-mu4yq8flnntr-emu4yqpor.jpg"]},
   {"title":"Rainbow Poppy Tee","categories":["knitting"],"date":"2024-09","photos":["sewing-mu4ynuf1omsg-emu4yoaf4.jpg"]},
   {"title":"Hello Kitty Cross Body Bag","categories":["sewing"],"date":"2026-09","photos":["sewing-mu4ylcf13d35-emu4yliac.jpg","sewing-mu4ylcid0wtt.jpg"]},
@@ -23,7 +24,7 @@ const PROJECTS = [
   {"title":"Diagonal Stripe Blankets","categories":["crochet"],"date":"2022-02","photos":["crochet-04.jpg","crochet-03.jpg"]},
   {"title":"Cat Ear Beanie","categories":["crochet"],"date":"2022-02","photos":["crochet-05-emu4y7nfb.jpg"]},
   {"title":"Granny Square Cardigan","categories":["crochet"],"date":"2022-01","photos":["crochet-13.jpg","crochet-14.jpg"]},
-  {"title":"Two-Tone Sweater","categories":["crochet"],"date":"2021-01","photos":["crochet-08.jpg"]},
+  {"title":"Two-Tone Sweater","categories":["crochet"],"date":"2021-01","photos":["crochet-08.jpg","crochet-mu4zfx6n11xm.jpg"]},
   {"title":"Colorblock Cardigan","categories":["crochet"],"date":"2021-01","photos":["crochet-09-emu4y7tb0.jpg"]},
   {"title":"K Sweater","categories":["crochet"],"date":"2020-11","photos":["crochet-mu4ydpzp4dos.jpg","crochet-01.jpg"]},
   {"title":"Tropical Print Set","categories":["sewing"],"date":"2020-09","photos":["sewing-05.jpg","sewing-04.jpg","sewing-06.jpg"]},
