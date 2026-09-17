@@ -12,7 +12,7 @@ const PROJECTS = [
   {"title":"Warm Vs Cool Quilt","categories":["sewing"],"date":"2023-09","photos":["sewing-07.jpg","sewing-03.jpg"]},
   {"title":"Scrappy Patchwork Quilt","categories":["sewing"],"date":"2023-08","photos":["sewing-08.jpg","sewing-09.jpg"]},
   {"title":"Waffle Knit Sweater","categories":["knitting"],"date":"2023-01","photos":["knitting-06.jpg"]},
-  {"title":"Anime Blanket","categories":["crochet","knitting"],"date":"2022-10","photos":["crochet-10.jpg","crochet-11.jpg","crochet-12.jpg","knitting-04.jpg","knitting-05.jpg","knitting-02.jpg","knitting-03.jpg"],"photoTags":{"crochet-10.jpg":["crochet"],"crochet-11.jpg":["crochet"],"crochet-12.jpg":["crochet"],"knitting-04.jpg":["knitting"],"knitting-05.jpg":["knitting"],"knitting-03.jpg":["knitting"]}},
+  {"title":"Anime Blanket","categories":["crochet","knitting"],"date":"2022-10","photos":["crochet-mu4xssl8keyy.jpg","crochet-10.jpg","crochet-11.jpg","crochet-12.jpg","knitting-04.jpg","knitting-05.jpg","knitting-02.jpg","knitting-03.jpg","crochet-mu4xssjn0pd0.jpg","crochet-mu4xssmbbaso.jpg","crochet-mu4xssnauo56.jpg","crochet-mu4xssowdna5.jpg"],"photoTags":{"crochet-10.jpg":["crochet"],"crochet-11.jpg":["crochet"],"crochet-12.jpg":["crochet"],"knitting-04.jpg":["knitting"],"knitting-05.jpg":["knitting"],"knitting-03.jpg":["knitting"]}},
   {"title":"Textured Stripe Panel","categories":["crochet"],"date":"2022-03","photos":["crochet-07.jpg"]},
   {"title":"Diagonal Stripe Blankets","categories":["crochet"],"date":"2022-02","photos":["crochet-04.jpg","crochet-03.jpg"]},
   {"title":"Cat Ear Beanie","categories":["crochet"],"date":"2022-02","photos":["crochet-05.jpg"]},
