@@ -62,6 +62,9 @@
   .tile { width:120px; position:relative; }
   .tile img { width:120px; height:150px; object-fit:contain; display:block; background:#fff; border:1px solid var(--line); cursor:grab; }
   .tile .badge { position:absolute; top:6px; left:6px; background:rgba(255,255,255,.92); font-size:10px; letter-spacing:.1em; text-transform:uppercase; padding:1px 6px; }
+  .tile.off img { opacity:.35; }
+  .tile .hid-badge { position:absolute; top:62px; left:50%; transform:translateX(-50%); background:var(--ink); color:#fff; padding:2px 8px; font-size:11px; letter-spacing:.1em; text-transform:uppercase; }
+  .tools button.confirm { background:var(--warn); color:#fff; border-color:var(--warn); }
   .tile .new { position:absolute; top:6px; right:6px; background:var(--ink); color:#fff; font-size:10px; padding:1px 6px; }
   .tools { display:flex; flex-wrap:wrap; gap:3px; margin-top:4px; }
   .tools button { padding:2px 7px; }
@@ -122,11 +125,11 @@
     <button id="save" class="primary" disabled>Saved</button>
     <div id="status" role="status"></div>
   </header>
-  <p class="help">Drag a photo onto another project to move it. The first photo in each project is its cover. When a project has more than one category, use the small labels under each photo to say which craft it shows. Nothing goes live until you click Save changes.</p>
+  <p class="help">Drag a photo onto another project to move it. The first photo in each project is its cover. When a project has more than one category, use the small labels under each photo to say which craft it shows. Hide keeps a photo off the site, &times; takes it out of the project. Nothing goes live until you click Save changes.</p>
   <main id="list"></main>
   <section id="looseBox" class="loose">
     <h2>Loose photos</h2>
-    <p>Photos that are not in any project (they stay saved). Drag one onto a project, or use its Move menu.</p>
+    <p>Photos that are not in any project. They stay saved but don't show on the site. Drag one onto a project, use its Move menu, or click Delete to remove it for good.</p>
     <div id="loose" class="strip"></div>
   </section>
 </div>
@@ -168,6 +171,7 @@ const CATS = { sewing: "Sewing", crochet: "Crochet", knitting: "Knitting" };
 const SHORT = { sewing: "Sew", crochet: "Crochet", knitting: "Knit" };
 const ORDER = Object.keys(CATS);
 
+let deletions = new Set();
 let token = "", projects = [], repoImages = [], uploads = {}, previews = {}, dirty = false, drag = null;
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -223,11 +227,13 @@ async function load() {
     if (!p.categories.length) p.categories = ["sewing"];
     delete p.category;
     p.photoTags = p.photoTags || {};
+    p.hiddenPhotos = (p.hiddenPhotos || []).filter(n => p.photos.includes(n));
   });
   let imgs = [];
   try { imgs = await gh(`/contents/images?ref=${REPO.branch}`); } catch (e) { if (e.code !== 404) throw e; }
   repoImages = imgs.filter(i => i.type === "file" && /\.(jpe?g|png|webp|gif)$/i.test(i.name)).map(i => i.name);
   uploads = {};
+  deletions = new Set();
   setDirty(false);
   render();
 }
@@ -252,7 +258,7 @@ function confirmTwice(btn, label) {
 
 function thisMonth() { return new Date().toISOString().slice(0, 7); }
 function newProject(from) {
-  return { title: "New project", categories: from ? [...from.categories] : ["sewing"], date: from ? from.date : thisMonth(), hidden: false, photos: [], photoTags: {} };
+  return { hiddenPhotos: [], title: "New project", categories: from ? [...from.categories] : ["sewing"], date: from ? from.date : thisMonth(), hidden: false, photos: [], photoTags: {} };
 }
 
 // Labels on a photo. No saved label means "all of the project's categories".
@@ -266,7 +272,7 @@ function movePhoto(name, fromIdx, to) {
   let dest = to === "loose" ? null : to === "new" ? newProject(src) : projects[+to];
   if (dest && dest === src) return;
   const tags = src ? photoCats(src, name) : null;
-  if (src) { src.photos.splice(src.photos.indexOf(name), 1); delete src.photoTags[name]; }
+  if (src) { src.photos.splice(src.photos.indexOf(name), 1); delete src.photoTags[name]; src.hiddenPhotos = src.hiddenPhotos.filter(n => n !== name); }
   if (to === "new") projects.splice(fromIdx >= 0 ? fromIdx + 1 : 0, 0, dest);
   if (dest) { dest.photos.push(name); if (tags) dest.photoTags[name] = tags; }
   if (src && !src.photos.length) projects.splice(projects.indexOf(src), 1);
@@ -331,15 +337,18 @@ function moveMenu(fromIdx) {
 function tile(name, pi, k) {
   const p = projects[pi];
   const t = document.createElement("div");
-  t.className = "tile";
+  const off = pi >= 0 && p.hiddenPhotos.includes(name);
+  t.className = "tile" + (off ? " off" : "");
   t.draggable = true;
   t.innerHTML = `<img loading="lazy" src="${esc(imgSrc(name))}" alt="" draggable="false">
     ${pi >= 0 && k === 0 ? '<span class="badge">Cover</span>' : ""}
     ${uploads[name] ? '<span class="new">New</span>' : ""}
+    ${off ? '<span class="hid-badge">Hidden</span>' : ""}
     <div class="tools">
       ${pi >= 0 && k > 0 ? '<button data-t="cover" title="Make this the cover">&#9733;</button><button data-t="left" title="Move left">&lsaquo;</button>' : ""}
       ${pi >= 0 && k < p.photos.length - 1 ? '<button data-t="right" title="Move right">&rsaquo;</button>' : ""}
-      ${pi >= 0 ? '<button data-t="edit" title="Rotate or crop">Edit</button>' : ""}
+      ${pi >= 0 ? `<button data-t="edit" title="Rotate or crop">Edit</button><button data-t="hide" title="${off ? "Show this photo on the site" : "Keep this photo off the site"}">${off ? "Show" : "Hide"}</button><button data-t="remove" title="Take this photo out of the project (it goes to Loose photos)">&times;</button>` : ""}
+      ${pi < 0 ? '<button data-t="delete" title="Delete this photo for good">Delete</button>' : ""}
       ${moveMenu(pi)}
     </div>
     ${pi >= 0 && p.categories.length > 1 ? `<div class="chips" title="Which crafts this photo shows">${p.categories.map(c => `<button class="chip${photoCats(p, name).includes(c) ? " on" : ""}" data-c="${c}">${SHORT[c]}</button>`).join("")}</div>` : ""}`;
@@ -357,7 +366,23 @@ function tile(name, pi, k) {
     changed();
   });
   t.querySelectorAll(".tools button").forEach(b => b.onclick = () => {
-    if (b.dataset.t === "edit") return openEditor(name, p);
+    const act = b.dataset.t;
+    if (act === "edit") return openEditor(name, p);
+    if (act === "remove") {
+      movePhoto(name, pi, "loose");
+      return status("Photo moved to Loose photos at the bottom. Delete it there if you don't want it at all.");
+    }
+    if (act === "delete") {
+      if (!confirmTwice(b, "Sure?")) return;
+      if (uploads[name]) { delete uploads[name]; delete previews[name]; }
+      else { deletions.add(name); repoImages = repoImages.filter(n => n !== name); }
+      changed();
+      return status("Photo deleted. It will be removed for good when you click Save changes.");
+    }
+    if (act === "hide") {
+      p.hiddenPhotos = off ? p.hiddenPhotos.filter(n => n !== name) : [...p.hiddenPhotos, name];
+      return changed();
+    }
     const a = p.photos;
     if (b.dataset.t === "cover") { a.splice(k, 1); a.unshift(name); }
     if (b.dataset.t === "left") { [a[k - 1], a[k]] = [a[k], a[k - 1]]; }
@@ -401,7 +426,8 @@ function render() {
         <button data-a="del">Delete</button>
       </div>
       <div class="strip"></div>
-      ${p.photos.length ? "" : '<p class="empty-note">No photos yet, so this project won\'t show on the site.</p>'}`;
+      ${!p.photos.length ? '<p class="empty-note">No photos yet, so this project won\'t show on the site.</p>'
+        : p.photos.every(n => p.hiddenPhotos.includes(n)) ? '<p class="empty-note">All photos are hidden, so this project won\'t show on the site.</p>' : ""}`;
     const strip = el.querySelector(".strip");
     p.photos.forEach((n, k) => strip.appendChild(tile(n, i, k)));
     const add = document.createElement("label");
@@ -426,6 +452,7 @@ function render() {
       const target = projects[+e.target.value];
       target.photos.push(...p.photos);
       p.photos.forEach(n => { target.photoTags[n] = photoCats(p, n); });
+      target.hiddenPhotos.push(...p.hiddenPhotos);
       p.categories.forEach(c => { if (!target.categories.includes(c)) target.categories.push(c); });
       target.categories = ORDER.filter(c => target.categories.includes(c));
       projects.splice(i, 1);
@@ -590,6 +617,7 @@ $("#edApply").onclick = () => {
   const i = p.photos.indexOf(old);
   if (i >= 0) p.photos[i] = name;
   if (p.photoTags[old]) { p.photoTags[name] = p.photoTags[old]; delete p.photoTags[old]; }
+  p.hiddenPhotos = p.hiddenPhotos.map(n => n === old ? name : n);
   const wasNew = !!uploads[old];
   if (wasNew) { delete uploads[old]; delete previews[old]; }
   closeEditor();
@@ -608,12 +636,14 @@ function toJS() {
     return "  " + JSON.stringify({
       title: p.title.trim() || "Untitled", categories: p.categories, date: p.date || "",
       ...(p.hidden ? { hidden: true } : {}), photos: p.photos,
-      ...(Object.keys(tags).length ? { photoTags: tags } : {})
+      ...(Object.keys(tags).length ? { photoTags: tags } : {}),
+      ...(p.hiddenPhotos.length ? { hiddenPhotos: p.hiddenPhotos.filter(n => p.photos.includes(n)) } : {})
     });
   });
   return `// Your projects. Edit them at /handmade/admin/ or by hand here.
 // categories: any of "sewing", "crochet", "knitting". The first photo is the cover.
 // photoTags (optional): labels for single photos, e.g. {"a.jpg": ["knitting"]}.
+// hiddenPhotos (optional): photos kept in the project but not shown on the site.
 // Photos without a label count for all of the project's categories.
 // date: "YYYY-MM", or "" to hide it. hidden: true keeps a project off the site.
 // Projects appear on the site in this order.
@@ -636,12 +666,14 @@ $("#save").onclick = async () => {
       const blob = await gh("/git/blobs", { method: "POST", body: JSON.stringify({ content: uploads[n], encoding: "base64" }) });
       tree.push({ path: "images/" + n, mode: "100644", type: "blob", sha: blob.sha });
     }
+    deletions.forEach(n => tree.push({ path: "images/" + n, mode: "100644", type: "blob", sha: null }));
     tree.push({ path: "projects.js", mode: "100644", type: "blob", content: toJS() });
     const t = await gh("/git/trees", { method: "POST", body: JSON.stringify({ base_tree: head.tree.sha, tree }) });
     const c = await gh("/git/commits", { method: "POST", body: JSON.stringify({ message: "Update projects from admin page", tree: t.sha, parents: [ref.object.sha] }) });
     await gh(`/git/refs/heads/${REPO.branch}`, { method: "PATCH", body: JSON.stringify({ sha: c.sha }) });
     repoImages.push(...names);
     uploads = {};
+    deletions = new Set();
     setDirty(false);
     render();
     status("Saved. The live site updates in a minute or two (refresh it to see the changes).");

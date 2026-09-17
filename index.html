@@ -78,14 +78,17 @@ function photoCats(p, n) {
 }
 // Newest first. Projects without a date go last; ties keep the admin page order.
 // Hidden and empty projects are skipped.
-const SHOWN = PROJECTS.filter(p => !p.hidden && p.photos && p.photos.length)
+// Photos listed in hiddenPhotos stay saved but don't show on the site.
+const visible = p => (p.photos || []).filter(n => !(p.hiddenPhotos || []).includes(n));
+const SHOWN = PROJECTS.filter(p => !p.hidden && visible(p).length)
   .map((p, i) => [p, i])
   .sort((a, b) => (b[0].date || "").localeCompare(a[0].date || "") || a[1] - b[1])
   .map(x => x[0]);
 function photosFor(p, filter) {
-  if (filter === "all") return p.photos;
-  const f = p.photos.filter(n => photoCats(p, n).includes(filter));
-  return f.length ? f : p.photos;
+  const all = visible(p);
+  if (filter === "all") return all;
+  const f = all.filter(n => photoCats(p, n).includes(filter));
+  return f.length ? f : all;
 }
 
 const grid = document.getElementById("grid"), nav = document.getElementById("filters");
