@@ -15,7 +15,7 @@ const PROJECTS = [
   {"title":"Wendigo Corset + Witch Hat","categories":["sewing","crochet"],"date":"2024-09","photos":["sewing-mu4zgxxeh7md-emu4zhkps.jpg","sewing-mu4zhdh0fjrz.jpg","sewing-mu4zhdizoplg.jpg"],"photoTags":{"sewing-mu4zgxxeh7md-emu4zhkps.jpg":["sewing"]}},
   {"title":"Pullover Sweater Vest","categories":["knitting"],"date":"2024-09","photos":["knitting-mu4yq8au8ao9-emu4yqet7.jpg","knitting-mu4yq8cf5mp0-emu4yqlq7.jpg","knitting-mu4yq8flnntr-emu4yqpor.jpg"]},
   {"title":"Rainbow Poppy Tee","categories":["knitting"],"date":"2024-09","photos":["sewing-mu4ynuf1omsg-emu4yoaf4.jpg"]},
-  {"title":"Hello Kitty Cross Body Bag","categories":["sewing"],"date":"2026-09","photos":["sewing-mu4ylcf13d35-emu4yliac.jpg","sewing-mu4ylcid0wtt.jpg"]},
+  {"title":"Hello Kitty Cross Body Bag","categories":["sewing"],"date":"2025-09","photos":["sewing-mu4ylcf13d35-emu4yliac.jpg","sewing-mu4ylcid0wtt.jpg","sewing-mu510l9s2plz.jpg"]},
   {"title":"Hello Kitty Mini Backpack","categories":["sewing"],"date":"2025-03","photos":["sewing-mu4yfw557c5c.jpg","sewing-mu4yfw9r5lom.jpg","sewing-mu4yfwdbpvks.jpg"]},
   {"title":"Green Sweater Vest","categories":["knitting"],"date":"2024-05","photos":["sewing-mu4y9f0xo60u.jpg"]},
   {"title":"Octopus Sweater","categories":["knitting"],"date":"2024-12","photos":["sewing-mu4y6bjzk3g2-emu4y75vt.jpg","sewing-mu4y6bnsrtwl-emu4y79pg.jpg"]},
