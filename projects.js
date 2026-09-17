@@ -5,6 +5,7 @@
 // date: "YYYY-MM", or "" to hide it. hidden: true keeps a project off the site.
 // Projects appear on the site in this order.
 const PROJECTS = [
+  {"title":"Octopus Sweater","categories":["sewing","knitting"],"date":"2024-12","photos":["sewing-mu4y6bjzk3g2.jpg","sewing-mu4y6bnsrtwl.jpg"]},
   {"title":"Star Quilt","categories":["sewing"],"date":"2026-09","photos":["sewing-mu4xomsj1zt4.jpg","sewing-mu4xomud04wu.jpg","sewing-mu4xomw6wgz1.jpg","sewing-mu4xomy09901.jpg","sewing-mu4xomzn32gz.jpg","sewing-mu4xon1dxmr1.jpg","sewing-mu4xon34iav8.jpg","sewing-mu4xon4syb1x.jpg","sewing-mu4xon6mqqht.jpg","sewing-mu4xon8l6yed.jpg","sewing-mu4xonaclsm0.jpg","sewing-mu4xonc14e9r.jpg","sewing-mu4xondn369k.jpg","sewing-mu4xonffvm6c.jpg","sewing-mu4xonhaqbqd.jpg","sewing-mu4xonj1t65v.jpg","sewing-mu4xonkrrx8q.jpg","sewing-mu4xonmhyj4l.jpg","sewing-mu4xono8704z.jpg","sewing-mu4xonpyc5v3.jpg","sewing-mu4xonrq8962.jpg","sewing-mu4xontfg1si.jpg","sewing-mu4xonv4c1xo.jpg","sewing-mu4xonwucz8l.jpg","sewing-mu4xonynp9tg.jpg","sewing-mu4xoo0b16q0.jpg","sewing-mu4xoo22bkdt.jpg","sewing-mu4xoo3tsky7.jpg","sewing-mu4xoo5is0m3.jpg","sewing-mu4xoo78zsvm.jpg","sewing-mu4xoo92m0a7.jpg","sewing-mu4xooaveeud.jpg"]},
   {"title":"Boxer Shorts","categories":["sewing"],"date":"2026-08","photos":["sewing-02.jpg","sewing-mu4xqrp4xup8.jpg","sewing-mu4xqrso3x54.jpg"]},
   {"title":"Blue Ribbed Vest","categories":["knitting"],"date":"2025-05","photos":["knitting-01.jpg"]},
