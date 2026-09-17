@@ -71,8 +71,12 @@ function photoCats(p, n) {
   const t = ((p.photoTags || {})[n] || []).filter(c => cats(p).includes(c));
   return t.length ? t : cats(p);
 }
-// Order comes from projects.js (set it on the admin page). Hidden and empty projects are skipped.
-const SHOWN = PROJECTS.filter(p => !p.hidden && p.photos && p.photos.length);
+// Newest first. Projects without a date go last; ties keep the admin page order.
+// Hidden and empty projects are skipped.
+const SHOWN = PROJECTS.filter(p => !p.hidden && p.photos && p.photos.length)
+  .map((p, i) => [p, i])
+  .sort((a, b) => (b[0].date || "").localeCompare(a[0].date || "") || a[1] - b[1])
+  .map(x => x[0]);
 function photosFor(p, filter) {
   if (filter === "all") return p.photos;
   const f = p.photos.filter(n => photoCats(p, n).includes(filter));
