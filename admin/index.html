@@ -34,6 +34,7 @@
 
   .bar { position:sticky; top:0; z-index:5; background:var(--bg); border-bottom:1px solid var(--line); padding:12px 24px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
   .bar .name { font:400 22px "Cormorant Garamond", serif; margin-right:auto; }
+  .bar input[type=search] { border:1px solid var(--line); background:var(--card); padding:6px 10px; border-radius:2px; width:190px; }
   .bar a { color:var(--ink); padding:6px 4px; }
   #status { flex-basis:100%; color:var(--muted); font-size:13px; min-height:1.3em; }
   #status.bad { color:var(--warn); }
@@ -113,6 +114,7 @@
 <div id="app" hidden>
   <header class="bar">
     <span class="name">Handmade admin</span>
+    <input id="find" type="search" placeholder="Search projects" aria-label="Search projects by name" autocomplete="off">
     <button id="addProject">+ New project</button>
     <button id="sortDate">Sort by date</button>
     <a href="../" target="_blank" rel="noopener">View site</a>
@@ -182,6 +184,8 @@ async function gh(path, opts = {}) {
   return r.status === 204 ? null : r.json();
 }
 const decode = b64 => new TextDecoder().decode(Uint8Array.from(atob(b64.replace(/\s/g, "")), c => c.charCodeAt(0)));
+
+const norm = t => String(t).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
 // ---------- sign in ----------
 async function signIn(t) {
@@ -377,9 +381,12 @@ function render() {
   const list = $("#list");
   list.innerHTML = "";
   if (!projects.length) list.innerHTML = '<p class="empty-note">No projects yet. Click + New project to add one.</p>';
+  const q = norm($("#find").value.trim());
+  let shown = 0;
   projects.forEach((p, i) => {
     const el = document.createElement("article");
     el.className = "proj" + (p.hidden ? " is-hidden" : "");
+    if (q && !norm(p.title).includes(q)) el.hidden = true; else shown++;
     el.innerHTML = `
       <div class="row">
         <div class="order">
@@ -440,6 +447,8 @@ function render() {
     list.appendChild(el);
   });
 
+  if (q) list.insertAdjacentHTML("afterbegin", `<p class="empty-note">${shown ? `Showing ${shown} of ${projects.length} projects matching your search.` : "No projects match your search."}</p>`);
+
   const loose = $("#loose");
   loose.innerHTML = "";
   const lp = loosePhotos();
@@ -448,7 +457,8 @@ function render() {
 }
 dropZone($("#looseBox"), "loose");
 
-$("#addProject").onclick = () => { projects.unshift(newProject()); changed(); focusTitle(0); };
+$("#find").addEventListener("input", () => render());
+$("#addProject").onclick = () => { $("#find").value = ""; projects.unshift(newProject()); changed(); focusTitle(0); };
 $("#sortDate").onclick = () => {
   projects.sort((a, b) => (b.date || "0").localeCompare(a.date || "0"));
   changed();

@@ -20,6 +20,10 @@
   nav button:hover { color:var(--ink); }
   nav button.on { color:var(--ink); border-color:var(--ink); }
   nav .n { opacity:.6; margin-left:4px; }
+  .search { display:block; margin:22px auto 0; width:min(320px,100%); border:0; border-bottom:1px solid var(--line); background:transparent; font:14px Inter, sans-serif; color:var(--ink); padding:8px 2px; text-align:center; }
+  .search:focus { outline:none; border-color:var(--ink); }
+  .search::placeholder { color:var(--muted); }
+  .none { grid-column:1/-1; text-align:center; color:var(--muted); padding:40px 0; }
   main { max-width:1200px; margin:0 auto; padding:24px 24px 80px; display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:36px 24px; }
   .card { cursor:pointer; }
   .card .img { aspect-ratio:4/5; overflow:hidden; background:#fff; border:1px solid var(--line); position:relative; }
@@ -45,6 +49,7 @@
   <h1>Handmade <em>by</em> Kennedy</h1>
   <p class="intro">Sewing, crochet, and knitting, made in San Diego.</p>
   <nav id="filters"></nav>
+  <input id="search" class="search" type="search" placeholder="Search projects" aria-label="Search projects by name" autocomplete="off">
 </header>
 <main id="grid"></main>
 <footer>&copy; <span id="yr"></span> Kennedy Anderson</footer>
@@ -95,10 +100,18 @@ Object.keys(NAMES).forEach(k => {
   b.dataset.k = k; nav.appendChild(b);
 });
 
+// Search ignores capitals and accents.
+const norm = t => String(t).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+const search = document.getElementById("search");
+search.addEventListener("input", () => render());
+
 function render() {
   nav.querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.k === current));
   grid.innerHTML = "";
-  SHOWN.filter(p => current === "all" || cats(p).includes(current)).forEach(p => {
+  const q = norm(search.value.trim());
+  const list = SHOWN.filter(p => (current === "all" || cats(p).includes(current)) && (!q || norm(p.title).includes(q)));
+  if (!list.length) grid.innerHTML = `<p class="none">${q ? "No projects match that search." : "Nothing here yet."}</p>`;
+  list.forEach(p => {
     const photos = photosFor(p, current);
     const c = document.createElement("article");
     c.className = "card";
