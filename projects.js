@@ -27,6 +27,6 @@ const PROJECTS = [
   {"title":"Colorblock Cardigan","categories":["crochet"],"date":"2021-01","photos":["crochet-09-emu4y7tb0.jpg"]},
   {"title":"K Sweater","categories":["crochet"],"date":"2020-11","photos":["crochet-mu4ydpzp4dos.jpg","crochet-01.jpg"]},
   {"title":"Tropical Print Set","categories":["sewing"],"date":"2020-09","photos":["sewing-05.jpg","sewing-04.jpg","sewing-06.jpg"]},
-  {"title":"Blue Maxi Dress","categories":["sewing"],"date":"2026-03","photos":["sewing-01.jpg"]},
+  {"title":"Blue Maxi Dress","categories":["sewing"],"date":"2026-03","photos":["sewing-01.jpg","sewing-mu4yzlw2i1lt-emu4yzt0t.jpg"]},
   {"title":"Patchwork Cardigan","categories":["crochet"],"date":"2020-08","photos":["crochet-06.jpg"]},
 ];
